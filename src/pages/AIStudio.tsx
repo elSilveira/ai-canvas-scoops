@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
+import { PlayerSetup } from "@/components/PlayerSetup";
 import { ImageSelectionRound, Round, ImageChoice } from "@/components/ImageSelectionRound";
 import { AIThinkingScreen, ThinkingComment } from "@/components/AIThinkingScreen";
 import { FinalReveal, IceCreamPersonality } from "@/components/FinalReveal";
@@ -15,13 +16,54 @@ import crunchyNuts from "@/assets/crunchy-nuts.jpg";
 import rainbowSprinkles from "@/assets/rainbow-sprinkles.jpg";
 import caramelDrizzle from "@/assets/caramel-drizzle.jpg";
 
-type GameState = 'welcome' | 'playing' | 'thinking' | 'reveal';
+interface Player {
+  id: string;
+  name: string;
+  budget: number;
+  selections: string[];
+}
+
+interface GameInventory {
+  [key: string]: {
+    available: number;
+    price: number;
+  };
+}
+
+type GameState = 'setup' | 'welcome' | 'playing' | 'thinking' | 'reveal';
 
 const AIStudio = () => {
-  const [gameState, setGameState] = useState<GameState>('welcome');
+  const [gameState, setGameState] = useState<GameState>('setup');
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
-  const [selections, setSelections] = useState<string[]>([]);
+  const [inventory, setInventory] = useState<GameInventory>({});
   const [currentThinking, setCurrentThinking] = useState<ThinkingComment | null>(null);
+
+  // Initialize inventory with prices and quantities
+  useEffect(() => {
+    const initialInventory: GameInventory = {
+      Adventure: { available: 3, price: 25 },
+      Classic: { available: 3, price: 20 },
+      Light: { available: 3, price: 15 },
+      Rich: { available: 3, price: 30 },
+      Smooth: { available: 3, price: 20 },
+      Crunchy: { available: 3, price: 25 },
+      Sprinkles: { available: 2, price: 35 },
+      Caramel: { available: 2, price: 40 }
+    };
+    
+    // Load from localStorage if exists
+    const savedInventory = localStorage.getItem('iceCreamGameInventory');
+    if (savedInventory) {
+      setInventory(JSON.parse(savedInventory));
+    } else {
+      setInventory(initialInventory);
+      localStorage.setItem('iceCreamGameInventory', JSON.stringify(initialInventory));
+    }
+  }, []);
+
+  const currentPlayer = players[currentPlayerIndex];
 
   const rounds: Round[] = [
     {
@@ -121,11 +163,11 @@ const AIStudio = () => {
     Caramel: { text: "Sweet sophistication - you know quality! 👌", emoji: "🍯" }
   };
 
-  const generatePersonality = (): IceCreamPersonality => {
-    const style = selections[0];
-    const sweetness = selections[1];
-    const texture = selections[2];
-    const topping = selections[3];
+  const generatePersonality = (playerSelections: string[]): IceCreamPersonality => {
+    const style = playerSelections[0];
+    const sweetness = playerSelections[1];
+    const texture = playerSelections[2];
+    const topping = playerSelections[3];
 
     const combinations = {
       "Adventure-Rich-Crunchy-Sprinkles": {
@@ -180,17 +222,62 @@ const AIStudio = () => {
     };
   };
 
+  const handlePlayersReady = (newPlayers: Player[]) => {
+    setPlayers(newPlayers);
+    setGameState('welcome');
+    setCurrentPlayerIndex(0);
+    setCurrentRoundIndex(0);
+  };
+
   const handleStartGame = () => {
     setGameState('playing');
     setCurrentRoundIndex(0);
-    setSelections([]);
+    setCurrentPlayerIndex(0);
+  };
+
+  const canAfford = (choice: ImageChoice): boolean => {
+    const ingredient = inventory[choice.value];
+    return ingredient && 
+           ingredient.available > 0 && 
+           currentPlayer && 
+           currentPlayer.budget >= ingredient.price;
   };
 
   const handleSelection = (choice: ImageChoice) => {
-    const newSelections = [...selections, choice.value];
-    setSelections(newSelections);
+    if (!currentPlayer || !canAfford(choice)) {
+      toast.error("Can't afford this ingredient or it's out of stock!");
+      return;
+    }
+
+    // Update player
+    const updatedPlayer = {
+      ...currentPlayer,
+      selections: [...currentPlayer.selections, choice.value],
+      budget: currentPlayer.budget - inventory[choice.value].price
+    };
+
+    // Update inventory
+    const updatedInventory = {
+      ...inventory,
+      [choice.value]: {
+        ...inventory[choice.value],
+        available: inventory[choice.value].available - 1
+      }
+    };
+
+    // Update players array
+    const updatedPlayers = players.map(p => 
+      p.id === currentPlayer.id ? updatedPlayer : p
+    );
+
+    setPlayers(updatedPlayers);
+    setInventory(updatedInventory);
     setCurrentThinking(thinkingComments[choice.value]);
     setGameState('thinking');
+
+    // Save to localStorage
+    localStorage.setItem('iceCreamGamePlayers', JSON.stringify(updatedPlayers));
+    localStorage.setItem('iceCreamGameInventory', JSON.stringify(updatedInventory));
   };
 
   const handleThinkingComplete = () => {
@@ -198,24 +285,48 @@ const AIStudio = () => {
       setCurrentRoundIndex(prev => prev + 1);
       setGameState('playing');
     } else {
-      setGameState('reveal');
+      // Move to next player or finish game
+      if (currentPlayerIndex < players.length - 1) {
+        setCurrentPlayerIndex(prev => prev + 1);
+        setCurrentRoundIndex(0);
+        setGameState('playing');
+        toast.success(`${players[currentPlayerIndex + 1].name}'s turn!`);
+      } else {
+        setGameState('reveal');
+      }
     }
   };
 
   const handlePlayAgain = () => {
-    setGameState('welcome');
+    // Reset game
+    localStorage.removeItem('iceCreamGamePlayers');
+    localStorage.removeItem('iceCreamGameInventory');
+    setGameState('setup');
+    setPlayers([]);
+    setCurrentPlayerIndex(0);
     setCurrentRoundIndex(0);
-    setSelections([]);
     setCurrentThinking(null);
+    
+    // Reset inventory
+    const initialInventory: GameInventory = {
+      Adventure: { available: 3, price: 25 },
+      Classic: { available: 3, price: 20 },
+      Light: { available: 3, price: 15 },
+      Rich: { available: 3, price: 30 },
+      Smooth: { available: 3, price: 20 },
+      Crunchy: { available: 3, price: 25 },
+      Sprinkles: { available: 2, price: 35 },
+      Caramel: { available: 2, price: 40 }
+    };
+    setInventory(initialInventory);
   };
 
   const handleShare = () => {
-    const personality = generatePersonality();
-    const shareText = `I just discovered I'm a ${personality.name}! 🍦 Find out your ice cream personality too!`;
+    const shareText = `Check out our ice cream personalities! 🍦 Play the game and discover yours too!`;
     
     if (navigator.share) {
       navigator.share({
-        title: 'My Ice Cream Personality',
+        title: 'Ice Cream Personality Game',
         text: shareText,
         url: window.location.href
       }).catch(() => {
@@ -228,17 +339,23 @@ const AIStudio = () => {
     }
   };
 
+  if (gameState === 'setup') {
+    return <PlayerSetup onPlayersReady={handlePlayersReady} />;
+  }
+
   if (gameState === 'welcome') {
     return <WelcomeScreen onStartGame={handleStartGame} />;
   }
 
-  if (gameState === 'playing') {
+  if (gameState === 'playing' && currentPlayer) {
     return (
       <ImageSelectionRound
         round={rounds[currentRoundIndex]}
         onSelect={handleSelection}
         currentRound={currentRoundIndex + 1}
         totalRounds={rounds.length}
+        player={currentPlayer}
+        inventory={inventory}
       />
     );
   }
@@ -256,8 +373,8 @@ const AIStudio = () => {
   if (gameState === 'reveal') {
     return (
       <FinalReveal
-        personality={generatePersonality()}
-        selections={selections}
+        players={players}
+        generatePersonality={generatePersonality}
         onPlayAgain={handlePlayAgain}
         onShare={handleShare}
       />

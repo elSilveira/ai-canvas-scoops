@@ -11,16 +11,23 @@ export interface IceCreamPersonality {
   gradient: string;
 }
 
-interface FinalRevealProps {
-  personality: IceCreamPersonality;
+interface Player {
+  id: string;
+  name: string;
+  budget: number;
   selections: string[];
+}
+
+interface FinalRevealProps {
+  players: Player[];
+  generatePersonality: (selections: string[]) => IceCreamPersonality;
   onPlayAgain: () => void;
   onShare: () => void;
 }
 
 export const FinalReveal = ({ 
-  personality, 
-  selections, 
+  players,
+  generatePersonality,
   onPlayAgain, 
   onShare 
 }: FinalRevealProps) => {
@@ -35,80 +42,111 @@ export const FinalReveal = ({
 
   return (
     <div className="min-h-screen bg-gradient-canvas p-6 flex items-center justify-center">
-      <div className="max-w-4xl mx-auto w-full space-y-8">
+      <div className="max-w-6xl mx-auto w-full space-y-8">
         {/* Celebration Header */}
         <div className="text-center space-y-4 animate-fade-in">
           <div className="flex items-center justify-center gap-2 text-ai-primary">
             <Sparkles className="w-6 h-6" />
-            <span className="text-lg font-semibold">Your Perfect Match</span>
+            <span className="text-lg font-semibold">Final Results</span>
             <Sparkles className="w-6 h-6" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground">
-            Meet Your Ice Cream Twin!
+            Ice Cream Personalities Revealed!
           </h1>
         </div>
 
-        {/* Ice Cream Reveal */}
-        <div className={`transition-all duration-1000 ${isRevealed ? 'animate-scale-in' : 'scale-50 opacity-0'}`}>
-          <div className="bg-surface-elevated/50 backdrop-blur-sm rounded-3xl p-8 border border-border/30 shadow-ai-glow">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              {/* Ice Cream Visual */}
-              <div className="text-center space-y-6">
-                <div 
-                  className="mx-auto w-48 h-48 rounded-full flex items-center justify-center text-8xl animate-bounce shadow-glow"
-                  style={{ 
-                    background: personality.gradient,
-                    boxShadow: `0 0 50px ${personality.color}40`
-                  }}
-                >
-                  {personality.emoji}
-                </div>
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-bold bg-gradient-ai bg-clip-text text-transparent">
-                    {personality.name}
-                  </h2>
-                  <p className="text-muted-foreground text-lg">
-                    {personality.description}
+        {/* Players Grid */}
+        <div className={`grid gap-6 ${players.length === 1 ? 'grid-cols-1' : players.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'} transition-all duration-1000 ${isRevealed ? 'animate-scale-in' : 'scale-50 opacity-0'}`}>
+          {players.map((player, index) => {
+            const personality = generatePersonality(player.selections);
+            const remainingBudget = player.budget;
+            
+            return (
+              <div 
+                key={player.id}
+                className="bg-surface-elevated/50 backdrop-blur-sm rounded-3xl p-6 border border-border/30 shadow-ai-glow"
+                style={{ animationDelay: `${index * 0.2}s` }}
+              >
+                {/* Player Name & Budget */}
+                <div className="text-center mb-4">
+                  <h3 className="text-xl font-bold text-foreground">{player.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Remaining Budget: ${remainingBudget}
                   </p>
                 </div>
-              </div>
 
-              {/* Personality Insights */}
-              <div className="space-y-6">
-                <h3 className="text-xl font-semibold text-foreground">
-                  What This Says About You:
-                </h3>
-                <div className="space-y-4">
-                  {personality.insights.map((insight, index) => (
-                    <div 
-                      key={index}
-                      className="flex items-start gap-3 animate-fade-in"
-                      style={{ animationDelay: `${index * 0.2}s` }}
-                    >
-                      <div className="p-1 rounded-full bg-ai-primary/20 mt-1">
-                        <Sparkles className="w-3 h-3 text-ai-primary" />
+                {/* Ice Cream Visual */}
+                <div className="text-center space-y-4 mb-6">
+                  <div 
+                    className="mx-auto w-32 h-32 rounded-full flex items-center justify-center text-5xl animate-bounce shadow-glow"
+                    style={{ 
+                      background: personality.gradient,
+                      boxShadow: `0 0 30px ${personality.color}40`
+                    }}
+                  >
+                    {personality.emoji}
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="text-lg font-bold bg-gradient-ai bg-clip-text text-transparent">
+                      {personality.name}
+                    </h4>
+                    <p className="text-muted-foreground text-sm">
+                      {personality.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Player's Selections */}
+                <div className="mb-4">
+                  <h5 className="text-sm font-semibold text-foreground mb-2 text-center">
+                    Flavor Journey
+                  </h5>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {player.selections.map((selection, selIndex) => (
+                      <div 
+                        key={selIndex}
+                        className="px-2 py-1 bg-gradient-ai/10 rounded-full text-xs text-foreground border border-ai-primary/20"
+                      >
+                        {selection}
                       </div>
-                      <p className="text-foreground">{insight}</p>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Key Insight */}
+                <div className="text-center">
+                  <div className="flex items-start justify-center gap-2">
+                    <div className="p-1 rounded-full bg-ai-primary/20 mt-0.5">
+                      <Sparkles className="w-3 h-3 text-ai-primary" />
                     </div>
-                  ))}
+                    <p className="text-sm text-foreground text-center">
+                      {personality.insights[0]}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
 
-        {/* Your Journey */}
+        {/* Budget Performance Summary */}
         <div className="bg-surface-elevated/30 backdrop-blur-sm rounded-2xl p-6 border border-border/20 animate-fade-in">
           <h3 className="text-lg font-semibold text-foreground mb-4 text-center">
-            Your Flavor Journey
+            Budget Challenge Results 💰
           </h3>
-          <div className="flex flex-wrap justify-center gap-3">
-            {selections.map((selection, index) => (
-              <div 
-                key={index}
-                className="px-4 py-2 bg-gradient-ai/10 rounded-full text-sm text-foreground border border-ai-primary/20"
-              >
-                {selection}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {players.map((player) => (
+              <div key={player.id} className="text-center">
+                <p className="font-medium text-foreground">{player.name}</p>
+                <p className="text-sm text-muted-foreground">
+                  Spent: ${100 - player.budget} | Saved: ${player.budget}
+                </p>
+                <div className="w-full bg-surface-elevated rounded-full h-2 mt-2">
+                  <div 
+                    className="bg-gradient-ai h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${((100 - player.budget) / 100) * 100}%` }}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -123,7 +161,7 @@ export const FinalReveal = ({
             className="px-8 py-6 text-lg border-ai-primary/30 hover:bg-ai-primary/10 transition-all duration-300"
           >
             <Share2 className="w-5 h-5 mr-3" />
-            Share Your Flavor
+            Share Results
           </Button>
           <Button
             onClick={onPlayAgain}
@@ -131,17 +169,17 @@ export const FinalReveal = ({
             className="px-8 py-6 text-lg bg-gradient-ai hover:shadow-ai-glow transition-all duration-300"
           >
             <RotateCcw className="w-5 h-5 mr-3" />
-            Play Again
+            New Game
           </Button>
         </div>
 
         {/* Fun Stats */}
         <div className="text-center space-y-2 text-muted-foreground animate-fade-in">
           <p className="text-sm">
-            🎉 You're one of the unique flavors in our ice cream universe!
+            🎉 {players.length} unique ice cream personalit{players.length > 1 ? 'ies' : 'y'} discovered!
           </p>
           <p className="text-xs">
-            Share with friends to see what flavors they discover
+            Challenge your friends to beat your budget management skills!
           </p>
         </div>
       </div>
