@@ -40,17 +40,17 @@ const AIStudio = () => {
   const [inventory, setInventory] = useState<GameInventory>({});
   const [currentThinking, setCurrentThinking] = useState<ThinkingComment | null>(null);
 
-  // Initialize inventory with prices and quantities
+  // Initialize inventory with prices and quantities (max 4 players, price range $10-15)
   useEffect(() => {
     const initialInventory: GameInventory = {
-      Adventure: { available: 3, price: 25 },
-      Classic: { available: 3, price: 20 },
-      Light: { available: 3, price: 15 },
-      Rich: { available: 3, price: 30 },
-      Smooth: { available: 3, price: 20 },
-      Crunchy: { available: 3, price: 25 },
-      Sprinkles: { available: 2, price: 35 },
-      Caramel: { available: 2, price: 40 }
+      Adventure: { available: 4, price: 15 },
+      Classic: { available: 4, price: 10 },
+      Light: { available: 4, price: 12 },
+      Rich: { available: 4, price: 15 },
+      Smooth: { available: 4, price: 10 },
+      Crunchy: { available: 4, price: 13 },
+      Sprinkles: { available: 4, price: 14 },
+      Caramel: { available: 4, price: 15 }
     };
     
     // Load from localStorage if exists
@@ -309,14 +309,14 @@ const AIStudio = () => {
     
     // Reset inventory
     const initialInventory: GameInventory = {
-      Adventure: { available: 3, price: 25 },
-      Classic: { available: 3, price: 20 },
-      Light: { available: 3, price: 15 },
-      Rich: { available: 3, price: 30 },
-      Smooth: { available: 3, price: 20 },
-      Crunchy: { available: 3, price: 25 },
-      Sprinkles: { available: 2, price: 35 },
-      Caramel: { available: 2, price: 40 }
+      Adventure: { available: 4, price: 15 },
+      Classic: { available: 4, price: 10 },
+      Light: { available: 4, price: 12 },
+      Rich: { available: 4, price: 15 },
+      Smooth: { available: 4, price: 10 },
+      Crunchy: { available: 4, price: 13 },
+      Sprinkles: { available: 4, price: 14 },
+      Caramel: { available: 4, price: 15 }
     };
     setInventory(initialInventory);
   };

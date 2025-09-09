@@ -139,12 +139,12 @@ export const FinalReveal = ({
               <div key={player.id} className="text-center">
                 <p className="font-medium text-foreground">{player.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  Spent: ${100 - player.budget} | Saved: ${player.budget}
+                  Spent: ${60 - player.budget} | Saved: ${player.budget}
                 </p>
                 <div className="w-full bg-surface-elevated rounded-full h-2 mt-2">
                   <div 
                     className="bg-gradient-ai h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${((100 - player.budget) / 100) * 100}%` }}
+                    style={{ width: `${((60 - player.budget) / 60) * 100}%` }}
                   />
                 </div>
               </div>

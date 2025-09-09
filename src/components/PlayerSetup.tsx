@@ -44,7 +44,7 @@ export const PlayerSetup = ({ onPlayersReady }: PlayerSetupProps) => {
     const players: Player[] = validNames.map((name, index) => ({
       id: `player_${index + 1}`,
       name: name.trim(),
-      budget: 100, // Each player starts with $100
+      budget: 60, // Each player starts with $60 (enough for 4 rounds at max $15 each)
       selections: []
     }));
 
@@ -66,7 +66,7 @@ export const PlayerSetup = ({ onPlayersReady }: PlayerSetupProps) => {
             Player Setup 👥
           </h1>
           <p className="text-lg text-muted-foreground">
-            Enter player names. Each player gets $100 to spend on ingredients!
+            Enter player names. Each player gets $60 to spend on ingredients!
           </p>
         </div>
 
