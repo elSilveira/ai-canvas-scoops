@@ -6,8 +6,8 @@ import { Card } from "@/components/ui/card";
 interface Player {
   id: string;
   name: string;
-  budget: number;
   selections: string[];
+  totalCost: number;
 }
 
 interface PlayerSetupProps {
@@ -44,8 +44,8 @@ export const PlayerSetup = ({ onPlayersReady }: PlayerSetupProps) => {
     const players: Player[] = validNames.map((name, index) => ({
       id: `player_${index + 1}`,
       name: name.trim(),
-      budget: 60, // Each player starts with $60 (enough for 4 rounds at max $15 each)
-      selections: []
+      selections: [],
+      totalCost: 0
     }));
 
     // Save to localStorage
@@ -66,7 +66,7 @@ export const PlayerSetup = ({ onPlayersReady }: PlayerSetupProps) => {
             Player Setup 👥
           </h1>
           <p className="text-lg text-muted-foreground">
-            Enter player names. Each player gets $60 to spend on ingredients!
+            Enter player names to start the ice cream personality game!
           </p>
         </div>
 

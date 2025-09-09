@@ -19,8 +19,8 @@ import caramelDrizzle from "@/assets/caramel-drizzle.jpg";
 interface Player {
   id: string;
   name: string;
-  budget: number;
   selections: string[];
+  totalCost: number;
 }
 
 interface GameInventory {
@@ -40,17 +40,18 @@ const AIStudio = () => {
   const [inventory, setInventory] = useState<GameInventory>({});
   const [currentThinking, setCurrentThinking] = useState<ThinkingComment | null>(null);
 
-  // Initialize inventory with prices and quantities (max 4 players, price range $10-15)
+  // Initialize inventory with prices and quantities based on number of players
   useEffect(() => {
+    const maxPlayers = Math.max(players.length, 4); // Default to 4 if no players yet
     const initialInventory: GameInventory = {
-      Adventure: { available: 4, price: 15 },
-      Classic: { available: 4, price: 10 },
-      Light: { available: 4, price: 12 },
-      Rich: { available: 4, price: 15 },
-      Smooth: { available: 4, price: 10 },
-      Crunchy: { available: 4, price: 13 },
-      Sprinkles: { available: 4, price: 14 },
-      Caramel: { available: 4, price: 15 }
+      Adventure: { available: maxPlayers, price: 15 },
+      Classic: { available: maxPlayers, price: 10 },
+      Light: { available: maxPlayers, price: 12 },
+      Rich: { available: maxPlayers, price: 15 },
+      Smooth: { available: maxPlayers, price: 10 },
+      Crunchy: { available: maxPlayers, price: 13 },
+      Sprinkles: { available: maxPlayers, price: 14 },
+      Caramel: { available: maxPlayers, price: 15 }
     };
     
     // Load from localStorage if exists
@@ -61,7 +62,7 @@ const AIStudio = () => {
       setInventory(initialInventory);
       localStorage.setItem('iceCreamGameInventory', JSON.stringify(initialInventory));
     }
-  }, []);
+  }, [players.length]);
 
   const currentPlayer = players[currentPlayerIndex];
 
@@ -235,17 +236,14 @@ const AIStudio = () => {
     setCurrentPlayerIndex(0);
   };
 
-  const canAfford = (choice: ImageChoice): boolean => {
+  const isAvailable = (choice: ImageChoice): boolean => {
     const ingredient = inventory[choice.value];
-    return ingredient && 
-           ingredient.available > 0 && 
-           currentPlayer && 
-           currentPlayer.budget >= ingredient.price;
+    return ingredient && ingredient.available > 0;
   };
 
   const handleSelection = (choice: ImageChoice) => {
-    if (!currentPlayer || !canAfford(choice)) {
-      toast.error("Can't afford this ingredient or it's out of stock!");
+    if (!currentPlayer || !isAvailable(choice)) {
+      toast.error("This ingredient is out of stock!");
       return;
     }
 
@@ -253,7 +251,7 @@ const AIStudio = () => {
     const updatedPlayer = {
       ...currentPlayer,
       selections: [...currentPlayer.selections, choice.value],
-      budget: currentPlayer.budget - inventory[choice.value].price
+      totalCost: currentPlayer.totalCost + inventory[choice.value].price
     };
 
     // Update inventory
@@ -308,15 +306,16 @@ const AIStudio = () => {
     setCurrentThinking(null);
     
     // Reset inventory
+    const maxPlayers = Math.max(players.length, 4);
     const initialInventory: GameInventory = {
-      Adventure: { available: 4, price: 15 },
-      Classic: { available: 4, price: 10 },
-      Light: { available: 4, price: 12 },
-      Rich: { available: 4, price: 15 },
-      Smooth: { available: 4, price: 10 },
-      Crunchy: { available: 4, price: 13 },
-      Sprinkles: { available: 4, price: 14 },
-      Caramel: { available: 4, price: 15 }
+      Adventure: { available: maxPlayers, price: 15 },
+      Classic: { available: maxPlayers, price: 10 },
+      Light: { available: maxPlayers, price: 12 },
+      Rich: { available: maxPlayers, price: 15 },
+      Smooth: { available: maxPlayers, price: 10 },
+      Crunchy: { available: maxPlayers, price: 13 },
+      Sprinkles: { available: maxPlayers, price: 14 },
+      Caramel: { available: maxPlayers, price: 15 }
     };
     setInventory(initialInventory);
   };

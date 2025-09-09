@@ -25,8 +25,8 @@ interface ImageSelectionRoundProps {
   player: {
     id: string;
     name: string;
-    budget: number;
     selections: string[];
+    totalCost: number;
   };
   inventory: {
     [key: string]: {
@@ -47,13 +47,13 @@ export const ImageSelectionRound = ({
   const [selectedChoice, setSelectedChoice] = useState<ImageChoice | null>(null);
   const [isSelecting, setIsSelecting] = useState(false);
 
-  const canAfford = (choice: ImageChoice): boolean => {
+  const isAvailable = (choice: ImageChoice): boolean => {
     const ingredient = inventory[choice.value];
-    return ingredient && ingredient.available > 0 && player.budget >= ingredient.price;
+    return ingredient && ingredient.available > 0;
   };
 
   const handleSelect = (choice: ImageChoice) => {
-    if (isSelecting || !canAfford(choice)) return;
+    if (isSelecting || !isAvailable(choice)) return;
     
     setSelectedChoice(choice);
     setIsSelecting(true);
@@ -71,7 +71,6 @@ export const ImageSelectionRound = ({
         <div className="text-center space-y-4">
           <div className="bg-surface-elevated p-4 rounded-xl border border-surface-border">
             <h3 className="text-xl font-bold text-ai-primary">{player.name}'s Turn</h3>
-            <p className="text-lg font-semibold text-emerald-400">Budget: ${player.budget}</p>
           </div>
           <div className="flex items-center justify-center gap-2">
             <span className="text-sm font-medium text-muted-foreground">
@@ -98,7 +97,6 @@ export const ImageSelectionRound = ({
           <div className="grid grid-cols-2 gap-6 w-fit animate-fade-in">
             {round.choices.map((choice, index) => {
               const ingredient = inventory[choice.value];
-              const affordable = canAfford(choice);
               const available = ingredient?.available > 0;
               
               return (
@@ -108,13 +106,13 @@ export const ImageSelectionRound = ({
                   variant="ghost"
                   className={cn(
                     "h-auto p-0 group relative overflow-hidden rounded-2xl transition-all duration-300",
-                    affordable && available && "hover:scale-105 hover:shadow-glow",
-                    !affordable || !available && "opacity-30 cursor-not-allowed grayscale",
+                    available && "hover:scale-105 hover:shadow-glow",
+                    !available && "opacity-30 cursor-not-allowed grayscale",
                     selectedChoice?.id === choice.id && "ring-4 ring-ai-primary scale-105",
                     isSelecting && selectedChoice?.id !== choice.id && "opacity-50 scale-95"
                   )}
                   style={{ animationDelay: `${index * 0.1}s` }}
-                  disabled={isSelecting || !affordable || !available}
+                  disabled={isSelecting || !available}
                 >
                   <div className="relative aspect-[4/3] w-80 overflow-hidden rounded-2xl">
                     <img
@@ -123,14 +121,8 @@ export const ImageSelectionRound = ({
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     />
 
-                    {/* Price & Availability Overlay */}
-                    <div className="absolute top-3 left-3 right-3 flex justify-between">
-                      <div className={cn(
-                        "px-3 py-1 rounded-full text-sm font-bold",
-                        affordable ? "bg-black/70 text-white" : "bg-red-500/90 text-white"
-                      )}>
-                        ${ingredient?.price}
-                      </div>
+                    {/* Availability Overlay */}
+                    <div className="absolute top-3 right-3">
                       <div className={cn(
                         "px-3 py-1 rounded-full text-sm font-bold",
                         ingredient?.available > 0 ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
@@ -148,11 +140,11 @@ export const ImageSelectionRound = ({
                       </div>
                     )}
 
-                    {/* Out of Budget/Stock Overlay */}
-                    {(!affordable || !available) && (
+                    {/* Out of Stock Overlay */}
+                    {!available && (
                       <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
                         <div className="bg-red-500 text-white px-4 py-2 rounded-full font-semibold">
-                          {!available ? "Sold Out" : "Can't Afford"}
+                          Sold Out
                         </div>
                       </div>
                     )}
