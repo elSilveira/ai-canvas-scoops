@@ -26,84 +26,84 @@ const AIStudio = () => {
   const rounds: Round[] = [
     {
       id: 'style',
-      category: 'Your Style',
-      question: 'What matches your vibe?',
+      category: '',
+      question: 'What feels right to you?',
       choices: [
         {
           id: 'adventure',
           image: adventureAction,
-          title: 'Adventure',
-          description: 'Action-packed and bold',
+          title: '',
+          description: '',
           value: 'Adventure'
         },
         {
           id: 'classic',
           image: classicRetro,
-          title: 'Classic',
-          description: 'Timeless and elegant',
+          title: '',
+          description: '',
           value: 'Classic'
         }
       ]
     },
     {
       id: 'sweetness',
-      category: 'Sweetness Level',
-      question: 'How sweet is your soul?',
+      category: '',
+      question: 'What feels right to you?',
       choices: [
         {
           id: 'light',
           image: lightFruit,
-          title: 'Light & Fresh',
-          description: 'Bright and refreshing',
+          title: '',
+          description: '',
           value: 'Light'
         },
         {
           id: 'rich',
           image: richChocolate,
-          title: 'Rich & Indulgent',
-          description: 'Deep and luxurious',
+          title: '',
+          description: '',
           value: 'Rich'
         }
       ]
     },
     {
       id: 'texture',
-      category: 'Texture Preference',
+      category: '',
       question: 'What feels right to you?',
       choices: [
         {
           id: 'smooth',
           image: smoothCream,
-          title: 'Smooth',
-          description: 'Silky and creamy',
+          title: '',
+          description: '',
           value: 'Smooth'
         },
         {
           id: 'crunchy',
           image: crunchyNuts,
-          title: 'Crunchy',
-          description: 'Textured and interesting',
+          title: '',
+          description: '',
           value: 'Crunchy'
         }
       ]
     },
     {
       id: 'toppings',
-      category: 'Final Touch',
-      question: 'What tops it off?',
+      category: '',
+      question: 'What feels right to you?',
       choices: [
         {
           id: 'sprinkles',
           image: rainbowSprinkles,
-          title: 'Rainbow Sprinkles',
-          description: 'Colorful and fun',
+          title: '',
+          description: '',
           value: 'Sprinkles'
         },
         {
           id: 'caramel',
           image: caramelDrizzle,
-          title: 'Caramel Drizzle',
-          description: 'Sweet and golden',
+          title: '',
+          description: '',
           value: 'Caramel'
         }
       ]

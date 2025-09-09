@@ -65,9 +65,6 @@ export const ImageSelectionRound = ({
 
         {/* Question */}
         <div className="text-center space-y-2 animate-fade-in">
-          <p className="text-sm font-medium text-ai-primary uppercase tracking-wider">
-            {round.category}
-          </p>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
             {round.question}
           </h2>
@@ -92,20 +89,9 @@ export const ImageSelectionRound = ({
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
                 <img
                   src={choice.image}
-                  alt={choice.title}
+                  alt="Choice option"
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                
-                {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-left">
-                  <h3 className="font-bold text-white text-xl mb-2">
-                    {choice.title}
-                  </h3>
-                  <p className="text-white/90 text-sm">
-                    {choice.description}
-                  </p>
-                </div>
 
                 {/* Selection Indicator */}
                 {selectedChoice?.id === choice.id && (
