@@ -166,10 +166,62 @@ const AIStudio = () => {
 
 
   const generatePersonality = (playerSelections: string[]): IceCreamPersonality => {
-    const style = playerSelections[0];
-    const sweetness = playerSelections[1];
-    const texture = playerSelections[2];
-    const topping = playerSelections[3];
+    // Check if everything was skipped (easter egg)
+    const allSkipped = playerSelections.every(s => s === 'Skip');
+    if (allSkipped) {
+      return {
+        name: "Empty Ice Cream Cone 🍦💨",
+        emoji: "🙈💔",
+        description: "Looks like you're as empty as this empty ice cream cone! You skipped everything! Maybe you're just too mysterious for our AI to figure out, or perhaps you're saving all your decisions for something really important. Either way, you've mastered the art of beautiful nothingness!",
+        color: "#95a5a6",
+        gradient: "linear-gradient(135deg, #bdc3c7, #2c3e50)",
+        insights: [
+          "You're a master of avoidance! 🦘",
+          "Decision paralysis or pure genius? We may never know! 🤷‍♂️",
+          "You keep everyone guessing with your mysterious ways! 🕵️‍♂️",
+          "Maybe you're just too cool for regular ice cream choices! 😎"
+        ]
+      };
+    }
+
+    // Check for mostly skipped (more than half)
+    const skipCount = playerSelections.filter(s => s === 'Skip').length;
+    if (skipCount > playerSelections.length / 2) {
+      return {
+        name: "The Mysterious Skipper 🎭🦘",
+        emoji: "🤷‍♂️✨",
+        description: "You're beautifully unpredictable! With all that skipping, you keep everyone guessing. You march to the beat of your own drum and refuse to be put in a box. Decision avoidance is your superpower!",
+        color: "#9b59b6",
+        gradient: "linear-gradient(135deg, #9b59b6, #8e44ad)",
+        insights: [
+          "You're wonderfully unpredictable! 🎲",
+          "Master of keeping people on their toes! 💃",
+          "Your indecision is a form of art! 🎨",
+          "Rules are more like... guidelines to you! 🏴‍☠️"
+        ]
+      };
+    }
+
+    // Filter out skips for regular personality generation
+    const validSelections = playerSelections.filter(s => s !== 'Skip');
+    
+    // If no valid selections, return pure mystery
+    if (validSelections.length === 0) {
+      return {
+        name: "Pure Mystery 🕵️‍♂️🔮",
+        emoji: "❓💫",
+        description: "You're an enigma wrapped in a riddle! We literally have no data on you!",
+        color: "#34495e",
+        gradient: "linear-gradient(135deg, #2c3e50, #34495e)",
+        insights: ["You're completely unknowable! And that's fascinating! 🌌"]
+      };
+    }
+
+    // Continue with regular personality generation using valid selections
+    const style = validSelections[0] || 'Classic';
+    const sweetness = validSelections[1] || 'Light';
+    const texture = validSelections[2] || 'Smooth';
+    const topping = validSelections[3] || 'Sprinkles';
 
     const combinations = {
       "Adventure-Rich-Crunchy-Sprinkles": {
@@ -245,6 +297,40 @@ const AIStudio = () => {
   const isAvailable = (choice: ImageChoice): boolean => {
     const ingredient = inventory[choice.value];
     return ingredient && ingredient.available > 0;
+  };
+
+  const handleSkip = () => {
+    // Generate AI conversation for skip
+    const conversation = aiConversationGenerator.generateConversation({
+      currentSelection: 'Skip',
+      previousSelections: currentPlayer.selections,
+      roundNumber: currentRoundIndex + 1,
+      playerName: currentPlayer.name,
+      isSkipped: true
+    });
+
+    // Create AI interaction from conversation
+    const aiInteraction: AIInteraction = {
+      selection: 'Skip',
+      aiThought: conversation.finalResponse.text,
+      aiEmoji: conversation.finalResponse.emoji,
+      aiSteps: conversation.steps.map(step => step.text),
+      round: currentRoundIndex + 1,
+      timestamp: new Date()
+    };
+    
+    const updatedPlayer = {
+      ...currentPlayer,
+      selections: [...currentPlayer.selections, 'Skip'],
+      aiInteractions: [...currentPlayer.aiInteractions, aiInteraction]
+    };
+
+    const newPlayers = [...players];
+    newPlayers[currentPlayerIndex] = updatedPlayer;
+    setPlayers(newPlayers);
+    
+    setCurrentThinking(conversation);
+    setGameState('thinking');
   };
 
   const handleSelection = (choice: ImageChoice) => {
@@ -376,6 +462,7 @@ const AIStudio = () => {
       <ImageSelectionRound
         round={rounds[currentRoundIndex]}
         onSelect={handleSelection}
+        onSkip={handleSkip}
         currentRound={currentRoundIndex + 1}
         totalRounds={rounds.length}
         player={currentPlayer}

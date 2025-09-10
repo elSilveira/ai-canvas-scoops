@@ -17,9 +17,49 @@ interface SelectionContext {
   previousSelections: string[];
   roundNumber: number;
   playerName: string;
+  isSkipped?: boolean;
 }
 
 export class AIConversationGenerator {
+  private skipThoughts = {
+    analyzing: [
+      "Wait... {PLAYER} just skipped this round? 🤨",
+      "Hold up, {PLAYER} is avoiding making a choice...",
+      "Interesting... {PLAYER} decided to skip... 🙈",
+      "Oh no! {PLAYER} is running away from decisions!",
+      "Skipping detected! What is {PLAYER} hiding? 👀",
+      "Avoidance mode activated by {PLAYER}...",
+      "Skip button pressed! Emergency analysis needed! 🚨",
+    ],
+    considering: [
+      "This skipping pattern is telling me something...",
+      "Maybe {PLAYER} is overwhelmed by choices? 🤯",
+      "Could this be decision paralysis or pure chaos? 🎪",
+      "The skip strategy... bold or just lazy? 🤔",
+      "Is {PLAYER} testing my patience? Because it's working! 😅",
+      "Skip after skip... I'm starting to see a pattern here...",
+      "This avoidance behavior is fascinating! 🧐",
+    ],
+    connecting: [
+      "Actually... maybe {PLAYER} is just mysterious! 🕵️‍♂️",
+      "Wait, what if this is strategic skipping? 🧠",
+      "Or perhaps {PLAYER} is saving energy for something big? ⚡",
+      "Could this be the skip-master technique? 🥷",
+      "Actually, maybe {PLAYER} just likes chaos! 🌪️",
+      "Hold on... is {PLAYER} trying to break my AI brain? 🤖💥",
+      "Plot twist: The skips ARE the personality! 🎭",
+    ],
+    concluding: [
+      "Yep, {PLAYER} is definitely the skipping type! 🦘",
+      "Confirmed: {PLAYER} lives life on skip mode! ⏭️",
+      "The skips have spoken! {PLAYER} is pure chaos! 🌀",
+      "Analysis complete: {PLAYER} is a beautiful mystery! 💫",
+      "Final verdict: {PLAYER} is the skip champion! 🏆",
+      "It's official - {PLAYER} has mastered the art of avoidance! 🎯",
+      "Case closed: {PLAYER} is wonderfully unpredictable! 🎲",
+    ]
+  };
+
   private thinkingSteps = {
     analyzing: [
       "Interesting... {PLAYER} chose {SELECTION}...",
@@ -194,7 +234,12 @@ export class AIConversationGenerator {
   };
 
   generateConversation(context: SelectionContext): AIThoughtPattern {
-    const { currentSelection, previousSelections, roundNumber, playerName } = context;
+    const { currentSelection, previousSelections, roundNumber, playerName, isSkipped } = context;
+    
+    // If skipped, use skip thoughts
+    if (isSkipped) {
+      return this.generateSkipConversation(context);
+    }
     
     // Determine number of steps (2-4 steps)
     const stepCount = 2 + Math.floor(Math.random() * 3);
@@ -240,6 +285,56 @@ export class AIConversationGenerator {
     };
 
     return { steps, finalResponse };
+  }
+
+  private generateSkipConversation(context: SelectionContext): AIThoughtPattern {
+    const stepCount = 2 + Math.floor(Math.random() * 3);
+    const steps: AIThoughtStep[] = [];
+    
+    // Start with skip analyzing
+    steps.push({
+      text: this.getRandomSkipTemplate('analyzing', context),
+      emoji: '🤨',
+      type: 'analyzing'
+    });
+
+    // Add skip considering
+    if (stepCount > 2) {
+      steps.push({
+        text: this.getRandomSkipTemplate('considering', context),
+        emoji: '🙃',
+        type: 'considering'
+      });
+    }
+
+    // Maybe add skip connecting
+    if (stepCount > 3) {
+      steps.push({
+        text: this.getRandomSkipTemplate('connecting', context),
+        emoji: '🤷‍♂️',
+        type: 'connecting'
+      });
+    }
+
+    // End with skip concluding
+    steps.push({
+      text: this.getRandomSkipTemplate('concluding', context),
+      emoji: '🦘',
+      type: 'concluding'
+    });
+
+    const finalResponse = {
+      text: "Skip detected! You're beautifully unpredictable! 🎪",
+      emoji: '🙈'
+    };
+
+    return { steps, finalResponse };
+  }
+
+  private getRandomSkipTemplate(type: keyof typeof this.skipThoughts, context: SelectionContext): string {
+    const templates = this.skipThoughts[type];
+    const template = templates[Math.floor(Math.random() * templates.length)];
+    return this.replacePlaceholders(template, context);
   }
 
   private getRandomTemplate(type: keyof typeof this.thinkingSteps, context: SelectionContext): string {

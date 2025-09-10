@@ -20,6 +20,7 @@ export interface Round {
 interface ImageSelectionRoundProps {
   round: Round;
   onSelect: (choice: ImageChoice) => void;
+  onSkip: () => void;
   currentRound: number;
   totalRounds: number;
   player: {
@@ -39,6 +40,7 @@ interface ImageSelectionRoundProps {
 export const ImageSelectionRound = ({ 
   round, 
   onSelect, 
+  onSkip,
   currentRound, 
   totalRounds,
   player,
@@ -90,6 +92,18 @@ export const ImageSelectionRound = ({
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
             {round.question}
           </h2>
+        </div>
+
+        {/* Skip Button */}
+        <div className="flex justify-center mb-4">
+          <Button
+            onClick={onSkip}
+            variant="outline"
+            className="text-xs px-3 py-1 opacity-50 hover:opacity-100 transition-opacity duration-300 border-dashed"
+            disabled={isSelecting}
+          >
+            🙈 Skip this round
+          </Button>
         </div>
 
         {/* Image Choices */}

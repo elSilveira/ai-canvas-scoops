@@ -95,18 +95,40 @@ export const FinalReveal = ({
         <div className={`grid gap-6 ${players.length === 1 ? 'grid-cols-1' : players.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'} transition-all duration-1000 ${isRevealed ? 'animate-scale-in' : 'scale-50 opacity-0'}`}>
         {players.map((player, index) => {
           const personality = generatePersonality(player.selections);
+          const isEmptyPlayer = player.selections.every(s => s === 'Skip');
           
           return (
               <div 
                 key={player.id}
-                className="bg-surface-elevated/50 backdrop-blur-sm rounded-3xl p-6 border border-border/30 shadow-ai-glow"
-                style={{ animationDelay: `${index * 0.2}s` }}
+                className={`backdrop-blur-sm rounded-3xl p-6 border shadow-ai-glow transition-all duration-500 hover:scale-[1.02] ${
+                  isEmptyPlayer 
+                    ? 'bg-gradient-to-br from-slate-200/50 to-slate-300/50 dark:from-slate-700/50 dark:to-slate-800/50 border-dashed border-slate-400' 
+                    : 'bg-surface-elevated/50 border-border/30'
+                }`}
+                style={!isEmptyPlayer ? { animationDelay: `${index * 0.2}s` } : { 
+                  animationDelay: `${index * 0.2}s`,
+                  boxShadow: '0 0 30px rgba(148, 163, 184, 0.3)'
+                }}
               >
+                {/* Easter Egg Alert for Empty Players */}
+                {isEmptyPlayer && (
+                  <div className="text-center mb-4 p-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-dashed border-slate-400">
+                    <div className="text-2xl mb-2">🎉 EASTER EGG FOUND! 🎉</div>
+                    <div className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                      Skip Master Achievement Unlocked!
+                    </div>
+                  </div>
+                )}
+                
                 {/* Player Name & Cost */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-bold text-foreground">{player.name}</h3>
-                    <span className="text-lg font-semibold text-emerald-400">
+                    <h3 className={`text-xl font-bold ${
+                      isEmptyPlayer ? 'text-slate-700 dark:text-slate-300' : 'text-foreground'
+                    }`}>{player.name}</h3>
+                    <span className={`text-lg font-semibold ${
+                      isEmptyPlayer ? 'text-slate-500 dark:text-slate-400' : 'text-emerald-400'
+                    }`}>
                       Total Cost: ${player.totalCost}
                     </span>
                   </div>
@@ -114,19 +136,31 @@ export const FinalReveal = ({
                   {/* Ice Cream Visual */}
                   <div className="text-center space-y-4 mb-6">
                     <div 
-                      className="mx-auto w-32 h-32 rounded-full flex items-center justify-center text-5xl animate-bounce shadow-glow"
+                      className={`mx-auto w-32 h-32 rounded-full flex items-center justify-center text-5xl shadow-glow ${
+                        isEmptyPlayer ? 'animate-pulse' : 'animate-bounce'
+                      }`}
                       style={{ 
-                        background: personality.gradient,
-                        boxShadow: `0 0 30px ${personality.color}40`
+                        background: isEmptyPlayer 
+                          ? 'linear-gradient(135deg, #f1f5f9, #cbd5e1)' 
+                          : personality.gradient,
+                        boxShadow: isEmptyPlayer 
+                          ? '0 0 30px rgba(148, 163, 184, 0.4)' 
+                          : `0 0 30px ${personality.color}40`
                       }}
                     >
                       {personality.emoji}
                     </div>
                     <div className="space-y-2">
-                      <h4 className="text-lg font-bold bg-gradient-ai bg-clip-text text-transparent">
+                      <h4 className={`text-lg font-bold ${
+                        isEmptyPlayer 
+                          ? 'text-slate-700 dark:text-slate-300' 
+                          : 'bg-gradient-ai bg-clip-text text-transparent'
+                      }`}>
                         {personality.name}
                       </h4>
-                      <p className="text-muted-foreground text-sm">
+                      <p className={`text-sm ${
+                        isEmptyPlayer ? 'text-slate-600 dark:text-slate-400' : 'text-muted-foreground'
+                      }`}>
                         {personality.description}
                       </p>
                     </div>
@@ -134,16 +168,22 @@ export const FinalReveal = ({
 
                   {/* Player's Selections */}
                   <div className="mb-4">
-                    <h5 className="text-sm font-semibold text-foreground mb-2 text-center">
-                      Flavor Journey
+                    <h5 className={`text-sm font-semibold mb-2 text-center ${
+                      isEmptyPlayer ? 'text-slate-600 dark:text-slate-400' : 'text-foreground'
+                    }`}>
+                      {isEmptyPlayer ? 'Skip Journey' : 'Flavor Journey'}
                     </h5>
                     <div className="flex flex-wrap justify-center gap-2">
                       {player.selections.map((selection, selIndex) => (
                         <div 
                           key={selIndex}
-                          className="px-2 py-1 bg-gradient-ai/10 rounded-full text-xs text-foreground border border-ai-primary/20"
+                          className={`px-2 py-1 rounded-full text-xs border ${
+                            isEmptyPlayer 
+                              ? 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600' 
+                              : 'bg-gradient-ai/10 text-foreground border-ai-primary/20'
+                          } ${selection === 'Skip' ? 'animate-pulse' : ''}`}
                         >
-                          {selection}
+                          {selection === 'Skip' ? '🙈 Skip' : selection}
                         </div>
                       ))}
                     </div>
@@ -152,10 +192,16 @@ export const FinalReveal = ({
                   {/* Key Insight */}
                   <div className="text-center">
                     <div className="flex items-start justify-center gap-2">
-                      <div className="p-1 rounded-full bg-ai-primary/20 mt-0.5">
-                        <Sparkles className="w-3 h-3 text-ai-primary" />
+                      <div className={`p-1 rounded-full mt-0.5 ${
+                        isEmptyPlayer ? 'bg-slate-300 dark:bg-slate-600' : 'bg-ai-primary/20'
+                      }`}>
+                        <Sparkles className={`w-3 h-3 ${
+                          isEmptyPlayer ? 'text-slate-500 dark:text-slate-400' : 'text-ai-primary'
+                        }`} />
                       </div>
-                      <p className="text-sm text-foreground text-center">
+                      <p className={`text-sm text-center ${
+                        isEmptyPlayer ? 'text-slate-600 dark:text-slate-400' : 'text-foreground'
+                      }`}>
                         {personality.insights[0]}
                       </p>
                     </div>
@@ -167,10 +213,13 @@ export const FinalReveal = ({
                       onClick={() => setShowInteractions(showInteractions === player.id ? null : player.id)}
                       variant="outline"
                       size="sm"
-                      className="border-ai-primary/30 text-ai-primary hover:bg-ai-primary/10"
+                      className={isEmptyPlayer 
+                        ? "border-slate-400 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        : "border-ai-primary/30 text-ai-primary hover:bg-ai-primary/10"
+                      }
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />
-                      {showInteractions === player.id ? 'Hide' : 'View'} AI Journey
+                      {showInteractions === player.id ? 'Hide' : 'View'} {isEmptyPlayer ? 'Skip' : 'AI'} Journey
                     </Button>
                   </div>
 
