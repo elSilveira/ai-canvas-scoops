@@ -5,6 +5,7 @@ import { ImageSelectionRound, Round, ImageChoice } from "@/components/ImageSelec
 import { AIThinkingScreen, ThinkingConversation } from "@/components/AIThinkingScreen";
 import { aiConversationGenerator } from "@/utils/aiConversationGenerator";
 import { FinalReveal, IceCreamPersonality } from "@/components/FinalReveal";
+import { useIngredientsInventory } from "@/hooks/useIngredientsInventory";
 import { toast } from "sonner";
 
 // Import images
@@ -34,13 +35,6 @@ interface Player {
   aiInteractions: AIInteraction[];
 }
 
-interface GameInventory {
-  [key: string]: {
-    available: number;
-    price: number;
-  };
-}
-
 type GameState = 'setup' | 'welcome' | 'playing' | 'thinking' | 'reveal';
 
 const AIStudio = () => {
@@ -48,34 +42,47 @@ const AIStudio = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
-  const [inventory, setInventory] = useState<GameInventory>({});
   const [currentThinking, setCurrentThinking] = useState<ThinkingConversation | null>(null);
-
-  // Initialize inventory with prices and quantities based on number of players
-  useEffect(() => {
-    const maxPlayers = Math.max(players.length, 4); // Default to 4 if no players yet
-    const initialInventory: GameInventory = {
-      Adventure: { available: maxPlayers, price: 15 },
-      Classic: { available: maxPlayers, price: 10 },
-      Light: { available: maxPlayers, price: 12 },
-      Rich: { available: maxPlayers, price: 15 },
-      Smooth: { available: maxPlayers, price: 10 },
-      Crunchy: { available: maxPlayers, price: 13 },
-      Sprinkles: { available: maxPlayers, price: 14 },
-      Caramel: { available: maxPlayers, price: 15 }
-    };
-    
-    // Load from localStorage if exists
-    const savedInventory = localStorage.getItem('iceCreamGameInventory');
-    if (savedInventory) {
-      setInventory(JSON.parse(savedInventory));
-    } else {
-      setInventory(initialInventory);
-      localStorage.setItem('iceCreamGameInventory', JSON.stringify(initialInventory));
-    }
-  }, [players.length]);
+  
+  // Use the new ingredients inventory hook
+  const { 
+    inventory, 
+    isLoading: inventoryLoading, 
+    error: inventoryError,
+    decreaseInventory,
+    resetInventory 
+  } = useIngredientsInventory(Math.max(players.length, 4));
 
   const currentPlayer = players[currentPlayerIndex];
+
+  // Show loading state while inventory is loading
+  if (inventoryLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-canvas flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ai-primary mx-auto"></div>
+          <p className="text-foreground">Loading ingredients...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if inventory failed to load
+  if (inventoryError) {
+    return (
+      <div className="min-h-screen bg-gradient-canvas flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="text-red-500">Failed to load ingredients: {inventoryError}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-ai-primary text-white rounded-lg hover:opacity-90"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const rounds: Round[] = [
     {
@@ -405,14 +412,8 @@ const AIStudio = () => {
       aiInteractions: [...currentPlayer.aiInteractions, aiInteraction]
     };
 
-    // Update inventory
-    const updatedInventory = {
-      ...inventory,
-      [choice.value]: {
-        ...inventory[choice.value],
-        available: inventory[choice.value].available - 1
-      }
-    };
+    // Update inventory using the hook function
+    decreaseInventory(choice.value, 1);
 
     // Update players array
     const updatedPlayers = players.map(p => 
@@ -420,13 +421,11 @@ const AIStudio = () => {
     );
 
     setPlayers(updatedPlayers);
-    setInventory(updatedInventory);
     setCurrentThinking(conversation);
     setGameState('thinking');
 
     // Save to localStorage
     localStorage.setItem('iceCreamGamePlayers', JSON.stringify(updatedPlayers));
-    localStorage.setItem('iceCreamGameInventory', JSON.stringify(updatedInventory));
   };
 
   const handleThinkingComplete = () => {
