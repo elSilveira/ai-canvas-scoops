@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Share2, RotateCcw, Sparkles, Download, MessageSquare } from "lucide-react";
 import { useState, useEffect } from "react";
+import { apiService, type GameResultData } from "@/services/api";
 
 export interface IceCreamPersonality {
   name: string;
@@ -43,16 +44,12 @@ export const FinalReveal = ({
 }: FinalRevealProps) => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [showInteractions, setShowInteractions] = useState<string | null>(null);
+  const [isSavingData, setIsSavingData] = useState(false);
+  const [gameData, setGameData] = useState<any>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsRevealed(true);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const downloadGameData = () => {
-    const gameData = {
+    // Generate the game data once when the component mounts
+    const generatedGameData = {
       gameDate: new Date().toISOString(),
       players: players.map(player => ({
         ...player,
@@ -62,6 +59,35 @@ export const FinalReveal = ({
       totalPlayers: players.length,
       gameVersion: "1.0"
     };
+    setGameData(generatedGameData);
+
+    const timer = setTimeout(() => {
+      setIsRevealed(true);
+      // Save data to backend after reveal
+      saveGameDataToBackend(generatedGameData);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const saveGameDataToBackend = async (dataToSave?: any) => {
+    const gameDataToSave = dataToSave || gameData;
+    if (!gameDataToSave) return;
+
+    setIsSavingData(true);
+    try {
+      // Send the data to the backend
+      const response = await apiService.saveGameResults(gameDataToSave);
+      console.log('Game data successfully saved to backend!', response);
+    } catch (error) {
+      console.error('Failed to save game data:', error);
+      // You could show a toast notification here
+    } finally {
+      setIsSavingData(false);
+    }
+  };
+
+  const downloadGameData = () => {
+    if (!gameData) return;
 
     const dataStr = JSON.stringify(gameData, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
