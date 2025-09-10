@@ -16,17 +16,8 @@ export const WelcomeScreen = ({ onStartGame }: WelcomeScreenProps) => {
             <img 
               src="/lovable-uploads/44b187ad-1d73-4392-a7fb-0674a8c45a95.png" 
               alt="STAMPalooza - Festival of Flavors" 
-              className="w-32 h-32 md:w-40 md:h-40 animate-festive-sparkle"
+              className="w-32 h-32 md:w-40 md:h-40"
             />
-          </div>
-          <div className="space-y-4">
-            <h1 className="text-5xl md:text-7xl font-bold bg-gradient-ai bg-clip-text text-transparent">
-              STAMPalooza
-            </h1>
-            <p className="text-xl md:text-2xl text-ai-secondary font-medium">
-              a sorveteria with a playful, Häagen-Dazs-style twist
-            </p>
-            <div className="w-24 h-1 bg-gradient-ai mx-auto rounded-full"></div>
           </div>
         </div>
 

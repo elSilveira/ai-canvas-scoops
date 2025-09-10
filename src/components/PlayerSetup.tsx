@@ -73,20 +73,12 @@ export const PlayerSetup = ({ onPlayersReady }: PlayerSetupProps) => {
       <div className="max-w-2xl mx-auto w-full space-y-8">
         {/* STAMPalooza Header */}
         <div className="text-center space-y-6 animate-fade-in">
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center">
             <img 
               src="/lovable-uploads/44b187ad-1d73-4392-a7fb-0674a8c45a95.png" 
               alt="STAMPalooza Logo" 
-              className="w-24 h-24 md:w-32 md:h-32 animate-festive-sparkle"
+              className="w-24 h-24 md:w-32 md:h-32"
             />
-          </div>
-          <div>
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-ai bg-clip-text text-transparent">
-              STAMPalooza
-            </h1>
-            <p className="text-lg md:text-xl text-ai-secondary font-medium mt-2">
-              a sorveteria with a playful, Häagen-Dazs-style twist
-            </p>
           </div>
           <p className="text-lg text-muted-foreground">
             Enter player names to start the ice cream personality game!
