@@ -16,7 +16,7 @@ export const WelcomeScreen = ({ onStartGame }: WelcomeScreenProps) => {
             <img 
               src="/lovable-uploads/44b187ad-1d73-4392-a7fb-0674a8c45a95.png" 
               alt="STAMPalooza - Festival of Flavors" 
-              className="w-32 h-32 md:w-40 md:h-40"
+              className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96"
             />
           </div>
         </div>

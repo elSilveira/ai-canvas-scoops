@@ -77,7 +77,7 @@ export const PlayerSetup = ({ onPlayersReady }: PlayerSetupProps) => {
             <img 
               src="/lovable-uploads/44b187ad-1d73-4392-a7fb-0674a8c45a95.png" 
               alt="STAMPalooza Logo" 
-              className="w-24 h-24 md:w-32 md:h-32"
+              className="w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80"
             />
           </div>
           <p className="text-lg text-muted-foreground">
