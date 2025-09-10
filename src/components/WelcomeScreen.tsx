@@ -8,25 +8,36 @@ interface WelcomeScreenProps {
 export const WelcomeScreen = ({ onStartGame }: WelcomeScreenProps) => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-canvas p-6">
-      <div className="text-center max-w-2xl mx-auto space-y-8 animate-fade-in">
-        {/* Hero Icon */}
-        <div className="relative mx-auto w-fit">
-          <div className="p-8 rounded-full bg-gradient-ai shadow-ai-glow">
-            <IceCream className="w-20 h-20 text-white" />
+      <div className="text-center max-w-3xl mx-auto space-y-10 animate-fade-in">
+        
+        {/* STAMPalooza Header */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-center">
+            <img 
+              src="/lovable-uploads/44b187ad-1d73-4392-a7fb-0674a8c45a95.png" 
+              alt="STAMPalooza - Festival of Flavors" 
+              className="w-32 h-32 md:w-40 md:h-40 animate-festive-sparkle"
+            />
           </div>
-          <div className="absolute -top-2 -right-2 p-2 rounded-full bg-ai-accent animate-bounce">
-            <Sparkles className="w-6 h-6 text-white" />
+          <div className="space-y-4">
+            <h1 className="text-5xl md:text-7xl font-bold bg-gradient-ai bg-clip-text text-transparent">
+              STAMPalooza
+            </h1>
+            <p className="text-xl md:text-2xl text-ai-secondary font-medium">
+              a sorveteria with a playful, Häagen-Dazs-style twist
+            </p>
+            <div className="w-24 h-1 bg-gradient-ai mx-auto rounded-full"></div>
           </div>
         </div>
 
-        {/* Headlines */}
+        {/* Game Description */}
         <div className="space-y-4">
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-ai bg-clip-text text-transparent">
-            Which Ice Cream Are You?
-          </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+            Which Ice Cream Flavor Are You?
+          </h2>
+          <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
             Pick the images that match your vibe — from action movies to sweet toppings — 
-            and let our AI scoop out your perfect flavor.
+            and let our AI scoop out your perfect flavor personality!
           </p>
         </div>
 
@@ -66,10 +77,10 @@ export const WelcomeScreen = ({ onStartGame }: WelcomeScreenProps) => {
           <Button 
             onClick={onStartGame}
             size="lg"
-            className="text-lg px-12 py-6 bg-gradient-ai hover:shadow-ai-glow transition-all duration-300 animate-pulse-glow"
+            className="text-xl px-12 py-6 bg-gradient-ai hover:shadow-festive transition-all duration-300 animate-pulse-glow"
           >
             <IceCream className="w-6 h-6 mr-3" />
-            Start Game
+            Start Your Flavor Journey
           </Button>
         </div>
       </div>

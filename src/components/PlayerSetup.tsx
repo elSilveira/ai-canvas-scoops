@@ -71,10 +71,23 @@ export const PlayerSetup = ({ onPlayersReady }: PlayerSetupProps) => {
   return (
     <div className="min-h-screen bg-gradient-canvas p-6 flex items-center justify-center">
       <div className="max-w-2xl mx-auto w-full space-y-8">
-        <div className="text-center space-y-4 animate-fade-in">
-          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-ai bg-clip-text text-transparent">
-            Player Setup 👥
-          </h1>
+        {/* STAMPalooza Header */}
+        <div className="text-center space-y-6 animate-fade-in">
+          <div className="flex items-center justify-center gap-4">
+            <img 
+              src="/lovable-uploads/44b187ad-1d73-4392-a7fb-0674a8c45a95.png" 
+              alt="STAMPalooza Logo" 
+              className="w-24 h-24 md:w-32 md:h-32 animate-festive-sparkle"
+            />
+          </div>
+          <div>
+            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-ai bg-clip-text text-transparent">
+              STAMPalooza
+            </h1>
+            <p className="text-lg md:text-xl text-ai-secondary font-medium mt-2">
+              a sorveteria with a playful, Häagen-Dazs-style twist
+            </p>
+          </div>
           <p className="text-lg text-muted-foreground">
             Enter player names to start the ice cream personality game!
           </p>
@@ -125,10 +138,10 @@ export const PlayerSetup = ({ onPlayersReady }: PlayerSetupProps) => {
             <Button
               onClick={startGame}
               disabled={validPlayerCount === 0 || isStarting}
-              className="px-8 py-6 text-lg font-semibold"
+              className="px-8 py-6 text-lg font-semibold bg-gradient-ai hover:shadow-festive"
               size="lg"
             >
-              {isStarting ? "Starting Game..." : `Start Game with ${validPlayerCount} Player${validPlayerCount !== 1 ? 's' : ''}`}
+              {isStarting ? "Starting Game..." : `🍦 Begin STAMPalooza with ${validPlayerCount} Player${validPlayerCount !== 1 ? 's' : ''}`}
             </Button>
           </div>
         </Card>
