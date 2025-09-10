@@ -66,6 +66,9 @@ export const ImageSelectionRound = ({
     }, 600);
   };
 
+  // Check if all choices are unavailable
+  const allChoicesUnavailable = round.choices.every(choice => !isAvailable(choice));
+
   return (
     <div className="min-h-screen bg-gradient-canvas p-6 flex items-center justify-center">
       <div className="max-w-5xl mx-auto w-full space-y-8">
@@ -106,67 +109,99 @@ export const ImageSelectionRound = ({
           </Button>
         </div>
 
-        {/* Image Choices */}
+        {/* Image Choices or Forced Skip */}
         <div className="flex justify-center">
-          <div className="grid grid-cols-2 gap-6 w-fit animate-fade-in">
-            {round.choices.map((choice, index) => {
-              const ingredient = inventory[choice.value];
-              const available = ingredient?.available > 0;
-              
-              return (
-                <Button
-                  key={choice.id}
-                  onClick={() => handleSelect(choice)}
-                  variant="ghost"
-                  className={cn(
-                    "h-auto p-0 group relative overflow-hidden rounded-2xl transition-all duration-300",
-                    available && "hover:scale-105 hover:shadow-glow",
-                    !available && "opacity-30 cursor-not-allowed grayscale",
-                    selectedChoice?.id === choice.id && "ring-4 ring-ai-primary scale-105",
-                    isSelecting && selectedChoice?.id !== choice.id && "opacity-50 scale-95"
-                  )}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                  disabled={isSelecting || !available}
-                >
-                  <div className="relative aspect-[4/3] w-80 overflow-hidden rounded-2xl">
-                    <img
-                      src={choice.image}
-                      alt="Choice option"
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
-
-                    {/* Availability Overlay */}
-                    <div className="absolute top-3 right-3">
-                      <div className={cn(
-                        "px-3 py-1 rounded-full text-sm font-bold",
-                        ingredient?.available > 0 ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
-                      )}>
-                        {ingredient?.available || 0} left
-                      </div>
-                    </div>
-
-                    {/* Selection Indicator */}
-                    {selectedChoice?.id === choice.id && (
-                      <div className="absolute inset-0 bg-ai-primary/20 flex items-center justify-center">
-                        <div className="bg-ai-primary text-white px-4 py-2 rounded-full font-semibold animate-scale-in">
-                          Selected!
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Out of Stock Overlay */}
-                    {!available && (
-                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                        <div className="bg-red-500 text-white px-4 py-2 rounded-full font-semibold">
-                          Sold Out
-                        </div>
-                      </div>
-                    )}
+          {allChoicesUnavailable ? (
+            /* Forced Skip with Bill Murray */
+            <div className="text-center space-y-6 animate-fade-in">
+              <div className="bg-red-500/10 border-2 border-red-500/30 border-dashed rounded-3xl p-8 max-w-md mx-auto">
+                <div className="space-y-4">
+                  <div className="text-red-500 text-xl font-bold">
+                    🚨 ALL INGREDIENTS SOLD OUT! 🚨
                   </div>
-                </Button>
-              );
-            })}
-          </div>
+                  <div className="w-48 h-48 mx-auto rounded-2xl overflow-hidden shadow-glow border-4 border-red-500/30">
+                    <img 
+                      src="/lovable-uploads/b9b42f6e-feb4-44aa-9331-367a138b13db.png" 
+                      alt="Bill Murray pointing - forced skip"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="text-lg font-semibold text-foreground">
+                    Sorry {player.name}, you have no choice but to skip!
+                  </div>
+                  <Button
+                    onClick={onSkip}
+                    size="lg"
+                    className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 text-xl font-bold animate-bounce"
+                    disabled={isSelecting}
+                  >
+                    👈 Forced Skip
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Normal Choice Grid */
+            <div className="grid grid-cols-2 gap-6 w-fit animate-fade-in">
+              {round.choices.map((choice, index) => {
+                const ingredient = inventory[choice.value];
+                const available = ingredient?.available > 0;
+                
+                return (
+                  <Button
+                    key={choice.id}
+                    onClick={() => handleSelect(choice)}
+                    variant="ghost"
+                    className={cn(
+                      "h-auto p-0 group relative overflow-hidden rounded-2xl transition-all duration-300",
+                      available && "hover:scale-105 hover:shadow-glow",
+                      !available && "opacity-30 cursor-not-allowed grayscale",
+                      selectedChoice?.id === choice.id && "ring-4 ring-ai-primary scale-105",
+                      isSelecting && selectedChoice?.id !== choice.id && "opacity-50 scale-95"
+                    )}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                    disabled={isSelecting || !available}
+                  >
+                    <div className="relative aspect-[4/3] w-80 overflow-hidden rounded-2xl">
+                      <img
+                        src={choice.image}
+                        alt="Choice option"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      />
+
+                      {/* Availability Overlay */}
+                      <div className="absolute top-3 right-3">
+                        <div className={cn(
+                          "px-3 py-1 rounded-full text-sm font-bold",
+                          ingredient?.available > 0 ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
+                        )}>
+                          {ingredient?.available || 0} left
+                        </div>
+                      </div>
+
+                      {/* Selection Indicator */}
+                      {selectedChoice?.id === choice.id && (
+                        <div className="absolute inset-0 bg-ai-primary/20 flex items-center justify-center">
+                          <div className="bg-ai-primary text-white px-4 py-2 rounded-full font-semibold animate-scale-in">
+                            Selected!
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Out of Stock Overlay */}
+                      {!available && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                          <div className="bg-red-500 text-white px-4 py-2 rounded-full font-semibold">
+                            Sold Out
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>
