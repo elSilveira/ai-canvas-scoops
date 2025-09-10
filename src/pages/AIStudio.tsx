@@ -447,28 +447,15 @@ const AIStudio = () => {
   };
 
   const handlePlayAgain = () => {
-    // Reset game
+    // Reset game but preserve inventory for persistent ingredient usage
     localStorage.removeItem('iceCreamGamePlayers');
-    localStorage.removeItem('iceCreamGameInventory');
     setGameState('setup');
     setPlayers([]);
     setCurrentPlayerIndex(0);
     setCurrentRoundIndex(0);
     setCurrentThinking(null);
     
-    // Reset inventory
-    const maxPlayers = Math.max(players.length, 4);
-    const initialInventory: GameInventory = {
-      Adventure: { available: maxPlayers, price: 15 },
-      Classic: { available: maxPlayers, price: 10 },
-      Light: { available: maxPlayers, price: 12 },
-      Rich: { available: maxPlayers, price: 15 },
-      Smooth: { available: maxPlayers, price: 10 },
-      Crunchy: { available: maxPlayers, price: 13 },
-      Sprinkles: { available: maxPlayers, price: 14 },
-      Caramel: { available: maxPlayers, price: 15 }
-    };
-    setInventory(initialInventory);
+    // Keep the current inventory state - don't reset it
   };
 
   const handleShare = () => {
