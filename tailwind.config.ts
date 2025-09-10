@@ -51,13 +51,18 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         
-        // AI-specific colors
+        // STAMPalooza-specific colors
         ai: {
           primary: "hsl(var(--ai-primary))",
           secondary: "hsl(var(--ai-secondary))",
           accent: "hsl(var(--ai-accent))",
           glow: "hsl(var(--ai-glow))",
+          purple: "hsl(var(--ai-purple))",
+          mint: "hsl(var(--ai-mint))",
         },
+        
+        // Additional surface colors
+        'surface-border': "hsl(var(--surface-border))",
         
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -75,11 +80,13 @@ export default {
         'gradient-canvas': 'var(--gradient-canvas)',
         'gradient-chat': 'var(--gradient-chat)',
         'gradient-glow': 'var(--gradient-glow)',
+        'gradient-festive': 'var(--gradient-festive)',
       },
       boxShadow: {
         'ai': 'var(--shadow-ai)',
         'glow': 'var(--shadow-glow)',
         'soft': 'var(--shadow-soft)',
+        'festive': 'var(--shadow-festive)',
       },
       transitionTimingFunction: {
         'smooth': 'var(--transition-smooth)',
@@ -129,11 +136,29 @@ export default {
         },
         "pulse-glow": {
           "0%, 100%": {
-            boxShadow: "0 0 20px hsl(245, 75%, 60%, 0.3)",
+            boxShadow: "0 0 20px hsl(45, 100%, 65%, 0.3)",
           },
           "50%": {
-            boxShadow: "0 0 40px hsl(245, 75%, 60%, 0.6)",
+            boxShadow: "0 0 40px hsl(45, 100%, 65%, 0.6)",
           },
+        },
+        "festive-sparkle": {
+          "0%, 100%": { 
+            transform: "rotate(0deg) scale(1)",
+            opacity: "0.7"
+          },
+          "25%": { 
+            transform: "rotate(90deg) scale(1.1)",
+            opacity: "1"
+          },
+          "50%": { 
+            transform: "rotate(180deg) scale(0.9)",
+            opacity: "0.8"
+          },
+          "75%": { 
+            transform: "rotate(270deg) scale(1.1)",
+            opacity: "1"
+          }
         },
         "typing": {
           "0%, 100%": { transform: "translateY(0)" },
@@ -147,6 +172,7 @@ export default {
         "scale-in": "scale-in 0.2s ease-out",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "typing": "typing 1.4s ease-in-out infinite",
+        "festive-sparkle": "festive-sparkle 3s ease-in-out infinite",
       },
     },
   },

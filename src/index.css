@@ -2,59 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* AI Creative Platform Design System - Modern gradients and AI-themed colors */
+/* STAMPalooza Design System - Playful ice cream festival colors */
 
 @layer base {
   :root {
-    /* AI-themed color palette */
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --surface: 224 35% 15%;
-    --surface-elevated: 226 30% 18%;
+    /* STAMPalooza themed color palette */
+    --background: 42 100% 96%;
+    --foreground: 25 100% 15%;
+    --surface: 50 100% 98%;
+    --surface-elevated: 45 100% 94%;
+    --surface-border: 35 30% 85%;
 
-    /* AI Brand Colors */
-    --ai-primary: 245 75% 60%;
-    --ai-secondary: 270 65% 55%;
-    --ai-accent: 195 85% 65%;
-    --ai-glow: 245 85% 70%;
+    /* STAMPalooza Brand Colors - Matching logomark */
+    --ai-primary: 45 100% 65%;      /* Golden yellow from cone */
+    --ai-secondary: 15 85% 70%;     /* Coral pink from ice cream */
+    --ai-accent: 185 75% 60%;       /* Teal blue from pillars */
+    --ai-glow: 45 100% 75%;         /* Bright golden glow */
+    --ai-purple: 280 60% 70%;       /* Purple from ice cream */
+    --ai-mint: 160 50% 75%;         /* Mint green accent */
 
-    --card: 224 35% 15%;
-    --card-foreground: 210 40% 98%;
+    --card: 45 100% 94%;
+    --card-foreground: 25 100% 15%;
 
-    --popover: 226 30% 18%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 50 100% 98%;
+    --popover-foreground: 25 100% 15%;
 
-    --primary: 245 75% 60%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 45 100% 65%;
+    --primary-foreground: 25 100% 15%;
 
-    --secondary: 226 30% 18%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 15 85% 70%;
+    --secondary-foreground: 50 100% 98%;
 
-    --muted: 225 25% 20%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 35 30% 90%;
+    --muted-foreground: 25 40% 45%;
 
-    --accent: 195 85% 65%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 185 75% 60%;
+    --accent-foreground: 50 100% 98%;
 
     --destructive: 0 75% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 50 100% 98%;
 
-    --border: 225 25% 25%;
-    --input: 225 25% 20%;
-    --ring: 245 75% 60%;
+    --border: 35 30% 85%;
+    --input: 50 100% 98%;
+    --ring: 45 100% 65%;
 
     --radius: 0.75rem;
 
-    /* Gradient definitions */
-    --gradient-ai: linear-gradient(135deg, hsl(245, 75%, 60%), hsl(270, 65%, 55%));
-    --gradient-canvas: linear-gradient(180deg, hsl(224, 35%, 15%), hsl(226, 30%, 18%));
-    --gradient-chat: linear-gradient(135deg, hsl(226, 30%, 18%), hsl(224, 35%, 15%));
-    --gradient-glow: radial-gradient(circle, hsl(245, 85%, 70%, 0.3), transparent 70%);
+    /* STAMPalooza Gradient definitions */
+    --gradient-ai: linear-gradient(135deg, hsl(45, 100%, 65%), hsl(15, 85%, 70%));
+    --gradient-canvas: linear-gradient(180deg, hsl(42, 100%, 96%), hsl(50, 100%, 98%));
+    --gradient-chat: linear-gradient(135deg, hsl(45, 100%, 94%), hsl(50, 100%, 98%));
+    --gradient-glow: radial-gradient(circle, hsl(45, 100%, 75%, 0.3), transparent 70%);
+    --gradient-festive: linear-gradient(45deg, hsl(45, 100%, 70%), hsl(15, 85%, 70%), hsl(185, 75%, 60%), hsl(280, 60%, 70%));
     
-    /* Shadows */
-    --shadow-ai: 0 0 30px hsl(245, 75%, 60%, 0.3);
-    --shadow-glow: 0 0 40px hsl(245, 85%, 70%, 0.4);
-    --shadow-soft: 0 4px 20px hsl(222, 47%, 11%, 0.3);
+    /* STAMPalooza Shadows */
+    --shadow-ai: 0 0 30px hsl(45, 100%, 65%, 0.3);
+    --shadow-glow: 0 0 40px hsl(45, 100%, 75%, 0.4);
+    --shadow-soft: 0 4px 20px hsl(25, 100%, 15%, 0.1);
+    --shadow-festive: 0 8px 32px hsl(15, 85%, 70%, 0.25);
 
     /* Animation variables */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -78,33 +83,33 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 25 50% 8%;
+    --foreground: 42 100% 96%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 25 40% 12%;
+    --card-foreground: 42 100% 96%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 25 40% 12%;
+    --popover-foreground: 42 100% 96%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 45 100% 70%;
+    --primary-foreground: 25 50% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 15 85% 65%;
+    --secondary-foreground: 42 100% 96%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 25 30% 20%;
+    --muted-foreground: 35 20% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 185 75% 55%;
+    --accent-foreground: 42 100% 96%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 42 100% 96%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 25 30% 25%;
+    --input: 25 30% 20%;
+    --ring: 45 100% 70%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -123,7 +128,7 @@
   }
   
   .shadow-ai-glow {
-    box-shadow: 0 0 30px hsl(245, 75%, 60%, 0.3);
+    box-shadow: 0 0 30px hsl(45, 100%, 65%, 0.3);
   }
   
   .hover-glow {
@@ -131,7 +136,11 @@
   }
   
   .hover-glow:hover {
-    box-shadow: 0 0 40px hsl(245, 85%, 70%, 0.4);
+    box-shadow: 0 0 40px hsl(45, 100%, 75%, 0.4);
+  }
+
+  .festive-glow {
+    box-shadow: 0 0 25px hsl(15, 85%, 70%, 0.4), 0 0 50px hsl(185, 75%, 60%, 0.2);
   }
 
   .animate-pulse-glow {
@@ -146,11 +155,30 @@
 @keyframes pulse-glow {
   0%, 100% { 
     transform: scale(1);
-    box-shadow: 0 0 30px hsl(245, 75%, 60%, 0.3);
+    box-shadow: 0 0 30px hsl(45, 100%, 65%, 0.3);
   }
   50% { 
     transform: scale(1.05);
-    box-shadow: 0 0 40px hsl(245, 85%, 70%, 0.6);
+    box-shadow: 0 0 40px hsl(45, 100%, 75%, 0.6);
+  }
+}
+
+@keyframes festive-sparkle {
+  0%, 100% { 
+    transform: rotate(0deg) scale(1);
+    opacity: 0.7;
+  }
+  25% { 
+    transform: rotate(90deg) scale(1.1);
+    opacity: 1;
+  }
+  50% { 
+    transform: rotate(180deg) scale(0.9);
+    opacity: 0.8;
+  }
+  75% { 
+    transform: rotate(270deg) scale(1.1);
+    opacity: 1;
   }
 }
 
