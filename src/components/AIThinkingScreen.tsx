@@ -1,28 +1,42 @@
 import { Brain, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export interface ThinkingComment {
+export interface ThinkingStep {
   text: string;
   emoji: string;
+  type: 'analyzing' | 'considering' | 'connecting' | 'concluding';
+}
+
+export interface ThinkingConversation {
+  steps: ThinkingStep[];
+  finalResponse: {
+    text: string;
+    emoji: string;
+  };
 }
 
 interface AIThinkingScreenProps {
-  comment: ThinkingComment;
+  conversation: ThinkingConversation;
   onComplete: () => void;
   duration?: number;
 }
 
 export const AIThinkingScreen = ({ 
-  comment, 
+  conversation, 
   onComplete, 
-  duration = 3000 
+  duration = 4000 
 }: AIThinkingScreenProps) => {
   const [currentPhase, setCurrentPhase] = useState(0);
   
+  // Create phases from conversation steps plus final response
   const phases = [
-    "Analyzing your choice...",
-    "Processing personality data...",
-    comment.text
+    ...conversation.steps.map(step => step.text),
+    conversation.finalResponse.text
+  ];
+  
+  const phaseEmojis = [
+    ...conversation.steps.map(step => step.emoji),
+    conversation.finalResponse.emoji
   ];
 
   useEffect(() => {
@@ -89,11 +103,9 @@ export const AIThinkingScreen = ({
               {phases[currentPhase]}
             </p>
             
-            {currentPhase === phases.length - 1 && (
-              <div className="mt-4 text-4xl animate-bounce">
-                {comment.emoji}
-              </div>
-            )}
+            <div className="mt-4 text-4xl animate-bounce">
+              {phaseEmojis[currentPhase]}
+            </div>
           </div>
         </div>
 

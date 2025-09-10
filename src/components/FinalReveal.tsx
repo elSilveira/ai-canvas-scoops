@@ -15,6 +15,7 @@ interface AIInteraction {
   selection: string;
   aiThought: string;
   aiEmoji: string;
+  aiSteps: string[];
   round: number;
   timestamp: Date;
 }
@@ -178,14 +179,30 @@ export const FinalReveal = ({
                     <div className="mt-4 space-y-3 bg-surface/20 rounded-lg p-4 border border-border/20">
                       <h6 className="text-sm font-semibold text-ai-primary text-center">AI's Thoughts During Game</h6>
                       {player.aiInteractions.map((interaction, idx) => (
-                        <div key={idx} className="flex items-start gap-3 bg-surface-elevated/30 rounded-lg p-3">
-                          <div className="text-lg">{interaction.aiEmoji}</div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs font-medium text-ai-primary">Round {interaction.round}</span>
-                              <span className="text-xs text-muted-foreground">• {interaction.selection}</span>
+                        <div key={idx} className="bg-surface-elevated/30 rounded-lg p-3 space-y-2">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs font-medium text-ai-primary">Round {interaction.round}</span>
+                            <span className="text-xs text-muted-foreground">• {interaction.selection}</span>
+                          </div>
+                          
+                          {/* AI Thinking Steps */}
+                          {interaction.aiSteps && interaction.aiSteps.length > 0 && (
+                            <div className="space-y-1 mb-2">
+                              {interaction.aiSteps.map((step, stepIdx) => (
+                                <div key={stepIdx} className="flex items-start gap-2 text-xs text-muted-foreground bg-surface/20 rounded p-2">
+                                  <span className="text-ai-secondary">🤔</span>
+                                  <span>{step}</span>
+                                </div>
+                              ))}
                             </div>
-                            <p className="text-sm text-foreground">{interaction.aiThought}</p>
+                          )}
+                          
+                          {/* Final AI Response */}
+                          <div className="flex items-start gap-3 bg-ai-primary/5 rounded-lg p-2">
+                            <div className="text-lg">{interaction.aiEmoji}</div>
+                            <div className="flex-1">
+                              <p className="text-sm text-foreground font-medium">{interaction.aiThought}</p>
+                            </div>
                           </div>
                         </div>
                       ))}

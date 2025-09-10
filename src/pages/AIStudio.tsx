@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 import { PlayerSetup } from "@/components/PlayerSetup";
 import { ImageSelectionRound, Round, ImageChoice } from "@/components/ImageSelectionRound";
-import { AIThinkingScreen, ThinkingComment } from "@/components/AIThinkingScreen";
+import { AIThinkingScreen, ThinkingConversation } from "@/components/AIThinkingScreen";
+import { aiConversationGenerator } from "@/utils/aiConversationGenerator";
 import { FinalReveal, IceCreamPersonality } from "@/components/FinalReveal";
 import { toast } from "sonner";
 
@@ -20,6 +21,7 @@ interface AIInteraction {
   selection: string;
   aiThought: string;
   aiEmoji: string;
+  aiSteps: string[];
   round: number;
   timestamp: Date;
 }
@@ -47,7 +49,7 @@ const AIStudio = () => {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
   const [inventory, setInventory] = useState<GameInventory>({});
-  const [currentThinking, setCurrentThinking] = useState<ThinkingComment | null>(null);
+  const [currentThinking, setCurrentThinking] = useState<ThinkingConversation | null>(null);
 
   // Initialize inventory with prices and quantities based on number of players
   useEffect(() => {
@@ -162,16 +164,6 @@ const AIStudio = () => {
     }
   ];
 
-  const thinkingComments: { [key: string]: ThinkingComment } = {
-    Adventure: { text: "Hmm… action hero, huh? Bold choice! 🚀", emoji: "💥" },
-    Classic: { text: "A timeless soul! I sense elegance... ✨", emoji: "🎭" },
-    Light: { text: "Fresh and bright - you love balance! 🌟", emoji: "🍃" },
-    Rich: { text: "I see you like it rich… interesting 🍫", emoji: "🍫" },
-    Smooth: { text: "Smooth operator! You appreciate finesse 😌", emoji: "✨" },
-    Crunchy: { text: "Texture lover! You like surprises 🎉", emoji: "🥜" },
-    Sprinkles: { text: "Playful spirit detected! Life's a party 🎊", emoji: "🌈" },
-    Caramel: { text: "Sweet sophistication - you know quality! 👌", emoji: "🍯" }
-  };
 
   const generatePersonality = (playerSelections: string[]): IceCreamPersonality => {
     const style = playerSelections[0];
@@ -261,11 +253,20 @@ const AIStudio = () => {
       return;
     }
 
+    // Generate AI conversation
+    const conversation = aiConversationGenerator.generateConversation({
+      currentSelection: choice.value,
+      previousSelections: currentPlayer.selections,
+      roundNumber: currentRoundIndex + 1,
+      playerName: currentPlayer.name
+    });
+
     // Create AI interaction
     const aiInteraction: AIInteraction = {
       selection: choice.value,
-      aiThought: thinkingComments[choice.value].text,
-      aiEmoji: thinkingComments[choice.value].emoji,
+      aiThought: conversation.finalResponse.text,
+      aiEmoji: conversation.finalResponse.emoji,
+      aiSteps: conversation.steps.map(step => step.text),
       round: currentRoundIndex + 1,
       timestamp: new Date()
     };
@@ -294,7 +295,7 @@ const AIStudio = () => {
 
     setPlayers(updatedPlayers);
     setInventory(updatedInventory);
-    setCurrentThinking(thinkingComments[choice.value]);
+    setCurrentThinking(conversation);
     setGameState('thinking');
 
     // Save to localStorage
@@ -386,9 +387,9 @@ const AIStudio = () => {
   if (gameState === 'thinking' && currentThinking) {
     return (
       <AIThinkingScreen
-        comment={currentThinking}
+        conversation={currentThinking}
         onComplete={handleThinkingComplete}
-        duration={3000}
+        duration={4000}
       />
     );
   }
