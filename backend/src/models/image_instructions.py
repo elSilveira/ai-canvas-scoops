@@ -1,9 +1,6 @@
 from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
-from pydantic_ai import Agent
-
-import src.settings
 
 
 class ImageInstructions(BaseModel):
@@ -55,35 +52,3 @@ class ImageInstructions(BaseModel):
             ],
             "constraints": {"brand_safe": True, "no_background_clutter": True},
         }
-
-
-def get_image_generator_agent(instructions: ImageInstructions) -> Agent:
-    return Agent(
-        "openai:gpt-5",
-        system_prompt=f"""
-        You are in charge of generating high-quality images of ice cream cones based on detailed user instructions. Your goal is to create photorealistic images that accurately reflect the specified number of scoops, flavors, toppings, and container type, while adhering to the desired style, composition, and camera settings.
-        ```
-        {instructions.model_dump_json()}
-        ```
-        """,
-    )
-
-
-if __name__ == "__main__":
-    instructions = ImageInstructions(
-        scoops=3,
-        flavors=["vanilla", "chocolate", "strawberry"],
-        toppings=["sprinkles", "chocolate_syrup"],
-    )
-    print(instructions.model_dump_json())
-    # response = get_image_generator_agent(instructions).run_sync(instructions)
-    # print(response)  # This would be the generated image URL or data
-
-    test = Agent(
-        "openai:gpt-5",
-        system_prompt="""
-        What is the capital of France?
-        """,
-    )
-    response = test.run_sync()
-    print(response)

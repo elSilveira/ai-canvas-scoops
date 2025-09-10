@@ -99,6 +99,53 @@ async def get_ingredient_allergies(ingredient_name: str):
         return None
 
 
+class MCPServerClient:
+    """Client wrapper for MCP server tools used by ReAct agents."""
+
+    async def map_selection_to_ingredients(self, selection: str) -> list[str]:
+        """Map abstract selection to concrete ingredients."""
+        # Mock implementation for ReAct demonstration
+        ingredient_map = {
+            "Rich": ["dark_chocolate", "mascarpone", "caramel_sauce"],
+            "Crunchy": ["chocolate_chips", "crushed_nuts", "cookie_crumbles"],
+            "Sweet": ["vanilla_ice_cream", "strawberry_sauce", "whipped_cream"],
+            "Fruity": ["strawberry_ice_cream", "blueberries", "raspberry_sauce"],
+        }
+        return ingredient_map.get(selection, ["vanilla_ice_cream"])
+
+    async def get_ingredient_cost(self, ingredient: str) -> float:
+        """Get cost for a specific ingredient."""
+        # Mock costs for ReAct demonstration
+        costs = {
+            "dark_chocolate": 0.50,
+            "mascarpone": 0.48,
+            "caramel_sauce": 0.35,
+            "chocolate_chips": 0.25,
+            "crushed_nuts": 0.40,
+            "cookie_crumbles": 0.30,
+            "vanilla_ice_cream": 0.20,
+            "strawberry_sauce": 0.15,
+            "whipped_cream": 0.18,
+            "strawberry_ice_cream": 0.22,
+            "blueberries": 0.60,
+            "raspberry_sauce": 0.25,
+        }
+        return costs.get(ingredient, 0.10)
+
+    async def get_cost_for_abstract_selection(self, selection: str) -> dict[str, float]:
+        """Get costs for all ingredients in an abstract selection."""
+        ingredients = await self.map_selection_to_ingredients(selection)
+        costs = {}
+        for ingredient in ingredients:
+            costs[ingredient] = await self.get_ingredient_cost(ingredient)
+        return costs
+
+    async def generate_ice_cream_image(self, prompt: str) -> str:
+        """Generate image for ice cream (mock implementation)."""
+        # Mock image URL for ReAct demonstration
+        return f"https://example.com/generated_ice_cream_image.jpg?prompt={prompt[:50]}"
+
+
 async def start_mcp():
     await init_db()
     await mcp.run_http_async(
