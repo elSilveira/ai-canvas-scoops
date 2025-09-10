@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Share2, RotateCcw, Sparkles } from "lucide-react";
+import { Share2, RotateCcw, Sparkles, Download, MessageSquare } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export interface IceCreamPersonality {
@@ -11,11 +11,20 @@ export interface IceCreamPersonality {
   gradient: string;
 }
 
+interface AIInteraction {
+  selection: string;
+  aiThought: string;
+  aiEmoji: string;
+  round: number;
+  timestamp: Date;
+}
+
 interface Player {
   id: string;
   name: string;
   selections: string[];
   totalCost: number;
+  aiInteractions: AIInteraction[];
 }
 
 interface FinalRevealProps {
@@ -32,6 +41,7 @@ export const FinalReveal = ({
   onShare 
 }: FinalRevealProps) => {
   const [isRevealed, setIsRevealed] = useState(false);
+  const [showInteractions, setShowInteractions] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -39,6 +49,31 @@ export const FinalReveal = ({
     }, 500);
     return () => clearTimeout(timer);
   }, []);
+
+  const downloadGameData = () => {
+    const gameData = {
+      gameDate: new Date().toISOString(),
+      players: players.map(player => ({
+        ...player,
+        personality: generatePersonality(player.selections),
+        aiInteractions: player.aiInteractions
+      })),
+      totalPlayers: players.length,
+      gameVersion: "1.0"
+    };
+
+    const dataStr = JSON.stringify(gameData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ice-cream-game-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-canvas p-6 flex items-center justify-center">
@@ -124,6 +159,38 @@ export const FinalReveal = ({
                       </p>
                     </div>
                   </div>
+
+                  {/* AI Interactions Button */}
+                  <div className="text-center mt-4">
+                    <Button
+                      onClick={() => setShowInteractions(showInteractions === player.id ? null : player.id)}
+                      variant="outline"
+                      size="sm"
+                      className="border-ai-primary/30 text-ai-primary hover:bg-ai-primary/10"
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      {showInteractions === player.id ? 'Hide' : 'View'} AI Journey
+                    </Button>
+                  </div>
+
+                  {/* AI Interactions */}
+                  {showInteractions === player.id && (
+                    <div className="mt-4 space-y-3 bg-surface/20 rounded-lg p-4 border border-border/20">
+                      <h6 className="text-sm font-semibold text-ai-primary text-center">AI's Thoughts During Game</h6>
+                      {player.aiInteractions.map((interaction, idx) => (
+                        <div key={idx} className="flex items-start gap-3 bg-surface-elevated/30 rounded-lg p-3">
+                          <div className="text-lg">{interaction.aiEmoji}</div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-xs font-medium text-ai-primary">Round {interaction.round}</span>
+                              <span className="text-xs text-muted-foreground">• {interaction.selection}</span>
+                            </div>
+                            <p className="text-sm text-foreground">{interaction.aiThought}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -155,6 +222,15 @@ export const FinalReveal = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
+          <Button
+            onClick={downloadGameData}
+            size="lg"
+            variant="outline"
+            className="px-6 py-6 text-lg border-emerald-400/30 hover:bg-emerald-400/10 transition-all duration-300 text-emerald-400"
+          >
+            <Download className="w-5 h-5 mr-3" />
+            Download JSON
+          </Button>
           <Button
             onClick={onShare}
             size="lg"

@@ -3,11 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 
+interface AIInteraction {
+  selection: string;
+  aiThought: string;
+  aiEmoji: string;
+  round: number;
+  timestamp: Date;
+}
+
 interface Player {
   id: string;
   name: string;
   selections: string[];
   totalCost: number;
+  aiInteractions: AIInteraction[];
 }
 
 interface PlayerSetupProps {
@@ -45,7 +54,8 @@ export const PlayerSetup = ({ onPlayersReady }: PlayerSetupProps) => {
       id: `player_${index + 1}`,
       name: name.trim(),
       selections: [],
-      totalCost: 0
+      totalCost: 0,
+      aiInteractions: []
     }));
 
     // Save to localStorage

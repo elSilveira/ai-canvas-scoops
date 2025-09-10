@@ -16,11 +16,20 @@ import crunchyNuts from "@/assets/crunchy-nuts.jpg";
 import rainbowSprinkles from "@/assets/rainbow-sprinkles.jpg";
 import caramelDrizzle from "@/assets/caramel-drizzle.jpg";
 
+interface AIInteraction {
+  selection: string;
+  aiThought: string;
+  aiEmoji: string;
+  round: number;
+  timestamp: Date;
+}
+
 interface Player {
   id: string;
   name: string;
   selections: string[];
   totalCost: number;
+  aiInteractions: AIInteraction[];
 }
 
 interface GameInventory {
@@ -224,7 +233,12 @@ const AIStudio = () => {
   };
 
   const handlePlayersReady = (newPlayers: Player[]) => {
-    setPlayers(newPlayers);
+    // Ensure all players have aiInteractions array
+    const playersWithInteractions = newPlayers.map(player => ({
+      ...player,
+      aiInteractions: player.aiInteractions || []
+    }));
+    setPlayers(playersWithInteractions);
     setGameState('welcome');
     setCurrentPlayerIndex(0);
     setCurrentRoundIndex(0);
@@ -247,11 +261,21 @@ const AIStudio = () => {
       return;
     }
 
+    // Create AI interaction
+    const aiInteraction: AIInteraction = {
+      selection: choice.value,
+      aiThought: thinkingComments[choice.value].text,
+      aiEmoji: thinkingComments[choice.value].emoji,
+      round: currentRoundIndex + 1,
+      timestamp: new Date()
+    };
+
     // Update player
     const updatedPlayer = {
       ...currentPlayer,
       selections: [...currentPlayer.selections, choice.value],
-      totalCost: currentPlayer.totalCost + inventory[choice.value].price
+      totalCost: currentPlayer.totalCost + inventory[choice.value].price,
+      aiInteractions: [...currentPlayer.aiInteractions, aiInteraction]
     };
 
     // Update inventory
