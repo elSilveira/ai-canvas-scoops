@@ -205,6 +205,26 @@ const AIStudio = () => {
     // Filter out skips for regular personality generation
     const validSelections = playerSelections.filter(s => s !== 'Skip');
     
+    // If we have some selections but not enough for full personality, generate a random one
+    if (validSelections.length > 0 && validSelections.length < 4) {
+      const availableFlavors = ['Adventure', 'Classic', 'Light', 'Rich', 'Smooth', 'Crunchy', 'Sprinkles', 'Caramel'];
+      
+      // Fill missing selections with random flavors, but favor the ones they did pick
+      const filledSelections = [...validSelections];
+      while (filledSelections.length < 4) {
+        const randomFlavor = availableFlavors[Math.floor(Math.random() * availableFlavors.length)];
+        filledSelections.push(randomFlavor);
+      }
+      
+      // Use the filled selections but note it in the description
+      const style = filledSelections[0];
+      const sweetness = filledSelections[1];
+      const texture = filledSelections[2];
+      const topping = filledSelections[3];
+      
+      return generateCombinationPersonality(style, sweetness, texture, topping, true, skipCount);
+    }
+
     // If no valid selections, return pure mystery
     if (validSelections.length === 0) {
       return {
@@ -218,10 +238,23 @@ const AIStudio = () => {
     }
 
     // Continue with regular personality generation using valid selections
-    const style = validSelections[0] || 'Classic';
-    const sweetness = validSelections[1] || 'Light';
-    const texture = validSelections[2] || 'Smooth';
-    const topping = validSelections[3] || 'Sprinkles';
+    const style = validSelections[0];
+    const sweetness = validSelections[1];
+    const texture = validSelections[2];
+    const topping = validSelections[3];
+
+    return generateCombinationPersonality(style, sweetness, texture, topping, false, skipCount);
+  };
+
+  // Helper function to generate personality from combinations
+  const generateCombinationPersonality = (
+    style: string, 
+    sweetness: string, 
+    texture: string, 
+    topping: string, 
+    isPartiallyRandom: boolean, 
+    skipCount: number
+  ): IceCreamPersonality => {
 
     const combinations = {
       "Adventure-Rich-Crunchy-Sprinkles": {
@@ -257,8 +290,14 @@ const AIStudio = () => {
     const key = `${style}-${sweetness}-${texture}-${topping}`;
     const personality = combinations[key as keyof typeof combinations] || combinations["Classic-Light-Smooth-Caramel"];
 
+    let finalDescription = personality.description;
+    if (isPartiallyRandom && skipCount > 0) {
+      finalDescription += ` With ${skipCount} skip${skipCount > 1 ? 's' : ''}, you added some mystery to your flavor journey!`;
+    }
+
     return {
       ...personality,
+      description: finalDescription,
       insights: [
         `${style} + ${sweetness} + ${texture} tells me you're someone who ${
           style === 'Adventure' ? 'loves bold experiences' : 'appreciates timeless beauty'
@@ -271,7 +310,8 @@ const AIStudio = () => {
         }.`,
         `And ${topping.toLowerCase()} on top? That's pure ${
           topping === 'Sprinkles' ? 'joy and playfulness' : 'sophistication and warmth'
-        }!`
+        }!`,
+        ...(isPartiallyRandom ? [`Your ${skipCount} skip${skipCount > 1 ? 's' : ''} added an element of beautiful unpredictability! 🎲`] : [])
       ]
     };
   };

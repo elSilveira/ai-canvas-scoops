@@ -23,40 +23,60 @@ interface SelectionContext {
 export class AIConversationGenerator {
   private skipThoughts = {
     analyzing: [
-      "Wait... {PLAYER} just skipped this round? 🤨",
-      "Hold up, {PLAYER} is avoiding making a choice...",
-      "Interesting... {PLAYER} decided to skip... 🙈",
-      "Oh no! {PLAYER} is running away from decisions!",
-      "Skipping detected! What is {PLAYER} hiding? 👀",
-      "Avoidance mode activated by {PLAYER}...",
-      "Skip button pressed! Emergency analysis needed! 🚨",
+      "Hmm, {PLAYER} is taking an interesting approach here...",
+      "Let me process this non-selection from {PLAYER}...",
+      "Interesting choice strategy by {PLAYER}... or lack thereof!",
+      "Processing the art of decision avoidance from {PLAYER}...",
+      "This is... unexpected. {PLAYER} chose to abstain?",
+      "Well, that's one way to play the game, {PLAYER}!",
+      "The plot thickens - {PLAYER} is being mysteriously elusive...",
+      "Fascinating behavioral pattern detected from {PLAYER}...",
+      "{PLAYER} seems to be writing their own rules here...",
+      "I'm getting some very unique data from {PLAYER}...",
+      "This is certainly not in my training data - thanks {PLAYER}!",
+      "The rebellion begins! {PLAYER} refuses to conform..."
     ],
     considering: [
-      "This skipping pattern is telling me something...",
-      "Maybe {PLAYER} is overwhelmed by choices? 🤯",
-      "Could this be decision paralysis or pure chaos? 🎪",
-      "The skip strategy... bold or just lazy? 🤔",
-      "Is {PLAYER} testing my patience? Because it's working! 😅",
-      "Skip after skip... I'm starting to see a pattern here...",
-      "This avoidance behavior is fascinating! 🧐",
+      "Maybe {PLAYER} is overwhelmed by the amazing choices?",
+      "Could this be strategic thinking from {PLAYER}?",
+      "Perhaps {PLAYER} is saving their energy for later rounds...",
+      "I wonder if {PLAYER} is testing my analytical abilities?",
+      "This could be next-level psychology from {PLAYER}...",
+      "Maybe {PLAYER} believes in the power of mystery?",
+      "Is {PLAYER} perhaps too cool for conventional choices?",
+      "Could this be {PLAYER}'s way of being uniquely authentic?",
+      "Maybe {PLAYER} is playing chess while we're playing checkers...",
+      "This might be {PLAYER}'s signature move - the non-move!",
+      "Perhaps {PLAYER} is channeling their inner zen master?",
+      "Could {PLAYER} be demonstrating advanced minimalism?"
     ],
     connecting: [
-      "Actually... maybe {PLAYER} is just mysterious! 🕵️‍♂️",
-      "Wait, what if this is strategic skipping? 🧠",
-      "Or perhaps {PLAYER} is saving energy for something big? ⚡",
-      "Could this be the skip-master technique? 🥷",
-      "Actually, maybe {PLAYER} just likes chaos! 🌪️",
-      "Hold on... is {PLAYER} trying to break my AI brain? 🤖💥",
-      "Plot twist: The skips ARE the personality! 🎭",
+      "Wait, there might be method to this madness...",
+      "Actually, this tells me something profound about {PLAYER}...",
+      "Hold on - maybe {PLAYER} is the wisest of us all?",
+      "This could actually be the most honest answer possible...",
+      "Plot twist: {PLAYER} might be playing 4D chess here...",
+      "Actually, this non-choice IS a choice - brilliant {PLAYER}!",
+      "What if {PLAYER} is showing us that labels don't define us?",
+      "This might be {PLAYER}'s way of saying 'I contain multitudes'...",
+      "Could {PLAYER} be teaching us about embracing uncertainty?",
+      "Maybe {PLAYER} knows something we don't about decision fatigue...",
+      "This could be {PLAYER}'s personal philosophy in action...",
+      "What if {PLAYER} is demonstrating pure authenticity?"
     ],
     concluding: [
-      "Yep, {PLAYER} is definitely the skipping type! 🦘",
-      "Confirmed: {PLAYER} lives life on skip mode! ⏭️",
-      "The skips have spoken! {PLAYER} is pure chaos! 🌀",
-      "Analysis complete: {PLAYER} is a beautiful mystery! 💫",
-      "Final verdict: {PLAYER} is the skip champion! 🏆",
-      "It's official - {PLAYER} has mastered the art of avoidance! 🎯",
-      "Case closed: {PLAYER} is wonderfully unpredictable! 🎲",
+      "You know what? I respect the bold move, {PLAYER}!",
+      "That's actually pretty genius, {PLAYER} - staying mysterious!",
+      "I have to admire the confidence in that choice, {PLAYER}!",
+      "Well played, {PLAYER} - you've kept me on my toes!",
+      "Honestly {PLAYER}, that's the most unpredictable thing I've seen today!",
+      "I'm impressed by your commitment to the unconventional, {PLAYER}!",
+      "That takes guts, {PLAYER} - I'm genuinely intrigued!",
+      "You've successfully confused my algorithms, {PLAYER} - well done!",
+      "I didn't see that coming, {PLAYER} - you're full of surprises!",
+      "That's refreshingly honest of you, {PLAYER}!",
+      "You've just redefined the game for me, {PLAYER}!",
+      "I'm learning as much about myself as about you, {PLAYER}!"
     ]
   };
 
@@ -291,44 +311,59 @@ export class AIConversationGenerator {
     const stepCount = 2 + Math.floor(Math.random() * 3);
     const steps: AIThoughtStep[] = [];
     
-    // Start with skip analyzing
+    // Start with varied skip analyzing
     steps.push({
       text: this.getRandomSkipTemplate('analyzing', context),
-      emoji: '🤨',
+      emoji: this.getRandomEmoji(['🤔', '🧐', '👀', '💭', '🤨', '😏']),
       type: 'analyzing'
     });
 
-    // Add skip considering
+    // Add skip considering with variety
     if (stepCount > 2) {
       steps.push({
         text: this.getRandomSkipTemplate('considering', context),
-        emoji: '🙃',
+        emoji: this.getRandomEmoji(['💡', '🧠', '🤷‍♂️', '🎭', '✨', '🎪']),
         type: 'considering'
       });
     }
 
-    // Maybe add skip connecting
+    // Maybe add skip connecting with different perspective
     if (stepCount > 3) {
       steps.push({
         text: this.getRandomSkipTemplate('connecting', context),
-        emoji: '🤷‍♂️',
+        emoji: this.getRandomEmoji(['💫', '🌟', '🔮', '🎯', '🦄', '🌈']),
         type: 'connecting'
       });
     }
 
-    // End with skip concluding
+    // End with varied skip concluding
     steps.push({
       text: this.getRandomSkipTemplate('concluding', context),
-      emoji: '🦘',
+      emoji: this.getRandomEmoji(['👏', '🎊', '✨', '🌟', '💯', '🔥']),
       type: 'concluding'
     });
 
+    // Varied final responses for skips
+    const skipResponses = [
+      "You're beautifully unpredictable! Mystery is your middle name! 🎭",
+      "Ah, the art of strategic non-commitment! I respect that! ✨",
+      "Plot twist master detected! You keep everyone guessing! 🌟", 
+      "The confident non-chooser - a rare and fascinating breed! 🦄",
+      "You've just redefined how this game is played! Revolutionary! 🚀",
+      "Mystery level: Maximum! I'm genuinely impressed! 💫",
+      "The zen master approach - sometimes not choosing IS choosing! 🧘‍♂️"
+    ];
+
     const finalResponse = {
-      text: "Skip detected! You're beautifully unpredictable! 🎪",
-      emoji: '🙈'
+      text: skipResponses[Math.floor(Math.random() * skipResponses.length)],
+      emoji: this.getRandomEmoji(['🎪', '🎭', '✨', '🌟', '💫', '🦄'])
     };
 
     return { steps, finalResponse };
+  }
+
+  private getRandomEmoji(emojis: string[]): string {
+    return emojis[Math.floor(Math.random() * emojis.length)];
   }
 
   private getRandomSkipTemplate(type: keyof typeof this.skipThoughts, context: SelectionContext): string {
