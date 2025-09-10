@@ -135,21 +135,25 @@ export const FinalReveal = ({
 
                   {/* Ice Cream Visual */}
                   <div className="text-center space-y-4 mb-6">
-                    <div 
-                      className={`mx-auto w-32 h-32 rounded-full flex items-center justify-center text-5xl shadow-glow ${
-                        isEmptyPlayer ? 'animate-pulse' : 'animate-bounce'
-                      }`}
-                      style={{ 
-                        background: isEmptyPlayer 
-                          ? 'linear-gradient(135deg, #f1f5f9, #cbd5e1)' 
-                          : personality.gradient,
-                        boxShadow: isEmptyPlayer 
-                          ? '0 0 30px rgba(148, 163, 184, 0.4)' 
-                          : `0 0 30px ${personality.color}40`
-                      }}
-                    >
-                      {personality.emoji}
-                    </div>
+                    {isEmptyPlayer ? (
+                      <div className="mx-auto w-32 h-32 rounded-2xl overflow-hidden shadow-glow animate-pulse border-2 border-dashed border-slate-400">
+                        <img 
+                          src="https://media1.tenor.com/m/_BiwWBWhYucAAAAd/what-huh.gif" 
+                          alt="Confused reaction GIF"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div 
+                        className="mx-auto w-32 h-32 rounded-full flex items-center justify-center text-5xl shadow-glow animate-bounce"
+                        style={{ 
+                          background: personality.gradient,
+                          boxShadow: `0 0 30px ${personality.color}40`
+                        }}
+                      >
+                        {personality.emoji}
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <h4 className={`text-lg font-bold ${
                         isEmptyPlayer 
