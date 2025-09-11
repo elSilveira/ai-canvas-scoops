@@ -44,18 +44,42 @@ cp .env.example .env
 
 3. Run the application:
 ```bash
-# Start MCP server
-uv run python src/main.py
+# Start FastAPI server (recommended)
+python run_server.py
 
-# Or start FastAPI server
-uv run python -m uvicorn src.api.main:app --reload
+# Or start MCP server
+uv run python src/main.py
 ```
 
 ## Configuration
 
-Required environment variables:
-- `STABILITY_API_KEY`: Stability AI API key for image generation
-- `OPENAI_API_KEY`: OpenAI API key for LLM processing
+### Environment Variables
+
+Environment variables are loaded automatically at application startup. Copy `.env.example` to `.env` and configure:
+
+**Required:**
+- `OPENAI_API_KEY`: OpenAI API key for AI agents and language processing
+  - Get from: https://platform.openai.com/account/api-keys
+- `STABILITY_AI_KEY`: Stability AI API key for ice cream image generation  
+  - Get from: https://platform.stability.ai/account/keys
+
+**Optional:**
+- `DB_FILE`: Path to SQLite database (defaults to `src/database/ingredients.db`)
+- `DEBUG`: Enable debug mode (defaults to `false`)
+
+### API Key Setup
+
+1. **OpenAI API Key**: Required for all AI processing features
+   - Create account at https://platform.openai.com/
+   - Generate API key in account settings
+   - Add to `.env` file: `OPENAI_API_KEY=your_key_here`
+
+2. **Stability AI API Key**: Required for ice cream image generation
+   - Create account at https://platform.stability.ai/
+   - Generate API key in account settings  
+   - Add to `.env` file: `STABILITY_AI_KEY=your_key_here`
+
+**Note:** The application will show clear error messages if API keys are missing or invalid.
 
 ## Usage
 

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { RealTimeCostDisplay } from "./RealTimeCostDisplay";
 
 export interface ImageChoice {
   id: string;
@@ -28,6 +29,7 @@ interface ImageSelectionRoundProps {
     name: string;
     selections: string[];
     totalCost: number;
+    generatedImageUrl?: string;
   };
   inventory: {
     [key: string]: {

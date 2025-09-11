@@ -36,8 +36,8 @@ class ImageInstructions(BaseModel):
             "background": {"type": "solid_color", "color": "#F5F7FB"},
             "output": {
                 "aspect_ratio": "1:1",
-                "width": 2048,
-                "height": 2048,
+                "width": 512,
+                "height": 512,
                 "format": "png",
                 "seed": 42,
             },

@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle, AlertTriangle, Loader2 } from "lucide-react";
+import * as api from "@/services/api";
 
 interface AIInteraction {
   selection: string;
@@ -17,6 +20,7 @@ interface Player {
   selections: string[];
   totalCost: number;
   aiInteractions: AIInteraction[];
+  generatedImageUrl?: string;
 }
 
 interface PlayerSetupProps {
@@ -26,6 +30,31 @@ interface PlayerSetupProps {
 export const PlayerSetup = ({ onPlayersReady }: PlayerSetupProps) => {
   const [playerNames, setPlayerNames] = useState<string[]>(['']);
   const [isStarting, setIsStarting] = useState(false);
+  const [systemStatus, setSystemStatus] = useState<'checking' | 'ready' | 'error'>('checking');
+  const [statusMessage, setStatusMessage] = useState('');
+
+  // Check backend health on component mount
+  useEffect(() => {
+    const checkSystemHealth = async () => {
+      try {
+        const health = await api.checkHealth();
+        console.log('🔍 Backend health check:', health);
+        
+        // Also check if we can get ingredients
+        const mappings = await api.getSelectionMappings();
+        console.log('🔍 Selection mappings available:', mappings.length);
+        
+        setSystemStatus('ready');
+        setStatusMessage(`🟢 AI Canvas ready! ${mappings.length} ingredients loaded`);
+      } catch (error) {
+        console.error('❌ System health check failed:', error);
+        setSystemStatus('error');
+        setStatusMessage('⚠️ Backend not available - using demo mode');
+      }
+    };
+
+    checkSystemHealth();
+  }, []);
 
   const addPlayer = () => {
     if (playerNames.length < 4) {
@@ -86,6 +115,18 @@ export const PlayerSetup = ({ onPlayersReady }: PlayerSetupProps) => {
         </div>
 
         <Card className="p-8 space-y-6 bg-surface-elevated border-surface-border animate-fade-in">
+          {/* System Status */}
+          <Alert className={`${systemStatus === 'ready' ? 'border-green-500/50 bg-green-500/10' : 
+                            systemStatus === 'error' ? 'border-yellow-500/50 bg-yellow-500/10' : 
+                            'border-blue-500/50 bg-blue-500/10'}`}>
+            <div className="flex items-center gap-2">
+              {systemStatus === 'checking' && <Loader2 className="w-4 h-4 animate-spin" />}
+              {systemStatus === 'ready' && <CheckCircle className="w-4 h-4 text-green-500" />}
+              {systemStatus === 'error' && <AlertTriangle className="w-4 h-4 text-yellow-500" />}
+              <AlertDescription>{statusMessage}</AlertDescription>
+            </div>
+          </Alert>
+
           <div className="space-y-4">
             {playerNames.map((name, index) => (
               <div key={index} className="flex gap-3 items-center">

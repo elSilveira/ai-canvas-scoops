@@ -30,8 +30,8 @@ class ImageGeneratorUltraTool:
         scoops: int = 2,
         save_to_root: bool = True,
         filename_prefix: str = "icecream",
-        width: int = 2048,
-        height: int = 2048,
+        width: int = 512,
+        height: int = 512,
         generate_variations: bool = False,
     ) -> Tuple[Optional[str], Optional[str], bool]:
         """
@@ -67,7 +67,14 @@ class ImageGeneratorUltraTool:
                 )
                 if filepaths:
                     primary_path = filepaths[0]
-                    image_url = f"file://{primary_path}" if save_to_root else None
+                    if save_to_root:
+                        filename = Path(primary_path).name
+                        image_url = (
+                            f"{src.settings.SERVER_URL}/api/v1/images/{filename}"
+                        )
+                        print(f"🌐 Image accessible at: {image_url}")
+                    else:
+                        image_url = None
                     return image_url, primary_path, True
             else:
                 # Generate single image
@@ -77,8 +84,11 @@ class ImageGeneratorUltraTool:
                     local_path = self._save_image_from_bytes(
                         image_bytes, filename_prefix, spec
                     )
-                    image_url = f"file://{local_path}"
+                    # Return HTTP URL instead of file:// URL
+                    filename = Path(local_path).name
+                    image_url = f"{src.settings.SERVER_URL}/api/v1/images/{filename}"
                     print(f"🖼️ Stability AI Ultra image saved to: {local_path}")
+                    print(f"🌐 Image accessible at: {image_url}")
                     return image_url, local_path, True
 
             return None, None, False
@@ -641,8 +651,8 @@ def generate_ice_cream_image_ultra(
     ingredients: list[str],
     scoops: int = 2,
     save_to_root: bool = True,
-    width: int = 2048,
-    height: int = 2048,
+    width: int = 512,
+    height: int = 512,
     generate_variations: bool = False,
 ) -> Tuple[Optional[str], Optional[str], bool]:
     """

@@ -7,7 +7,7 @@ from .image_generator_ultra import ImageGeneratorUltraTool
 import requests
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Any
 
 import src.settings
 
@@ -73,6 +73,76 @@ class ImageGeneratorTool:
             ingredients, scoops, save_to_root, filename_prefix
         )
 
+    async def generate_ice_cream_image_async(
+        self,
+        selections: list[str],
+        player_name: str = "Player",
+        style: str = "realistic",
+        size: str = "1024x1024",
+    ) -> dict[str, Any]:
+        """
+        Async version of image generation for API routes.
+
+        Args:
+            selections: List of player selections (mapped to ingredients)
+            player_name: Name of the player
+            style: Image style preference
+            size: Image size (e.g., "1024x1024")
+
+        Returns:
+            Dict with success status and image URL or error
+        """
+        try:
+            # Map selections to ingredients (simplified mapping)
+            ingredients = [
+                selection.lower() for selection in selections if selection != "Skip"
+            ]
+
+            # Default to common ice cream base if no selections
+            if not ingredients:
+                ingredients = ["vanilla", "cream"]
+
+            # Extract dimensions from size string for potential future use
+            try:
+                _ = size.split("x")  # Parse but don't use for now
+                scoops = min(len(ingredients), 3)  # Reasonable number of scoops
+            except ValueError:
+                scoops = 2
+
+            print(
+                f"🎨 Generating image for {player_name} with ingredients: {ingredients}"
+            )
+
+            # Call the synchronous method
+            image_url, local_path, success = self.generate_ice_cream_image(
+                ingredients=ingredients,
+                scoops=scoops,
+                save_to_root=True,
+                filename_prefix=f"icecream_{player_name.lower()}",
+            )
+
+            if success:
+                return {
+                    "success": True,
+                    "image_url": image_url,
+                    "local_path": local_path,
+                    "metadata": {
+                        "player_name": player_name,
+                        "ingredients": ingredients,
+                        "style": style,
+                        "size": size,
+                    },
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": "Image generation failed - check Stability AI API key configuration",
+                }
+
+        except Exception as e:
+            print(f"❌ Async image generation failed: {e}")
+            return {"success": False, "error": f"Image generation error: {str(e)}"}
+
     def _generate_with_core(
         self,
         ingredients: list[str],
@@ -107,15 +177,18 @@ class ImageGeneratorTool:
                     local_path = self._save_image_from_response(
                         response.content, filename_prefix
                     )
-                    image_url = f"file://{local_path}"
+                    # Return HTTP URL instead of file:// URL
+                    filename = Path(local_path).name
+                    image_url = f"{src.settings.SERVER_URL}/api/v1/images/{filename}"
                     print(f"🖼️ Stability AI Core image saved to: {local_path}")
+                    print(f"🌐 Image accessible at: {image_url}")
                 else:
-                    # For non-save mode, we'd need to host the image somewhere
-                    # For now, save it and return file URL
+                    # For non-save mode, save it and return HTTP URL
                     local_path = self._save_image_from_response(
                         response.content, filename_prefix
                     )
-                    image_url = f"file://{local_path}"
+                    filename = Path(local_path).name
+                    image_url = f"{src.settings.SERVER_URL}/api/v1/images/{filename}"
 
                 return image_url, local_path, True
             else:
@@ -128,19 +201,18 @@ class ImageGeneratorTool:
 
         except Exception as e:
             print(f"❌ Stability AI Core image generation failed: {e}")
-            print("🔄 Falling back to mock image generation...")
 
-            # Fallback to mock generation
-            try:
-                from src.tools.mock_image_generator import MockImageGeneratorTool
-
-                mock_generator = MockImageGeneratorTool()
-                return mock_generator.generate_ice_cream_image(
-                    ingredients, scoops, save_to_root, filename_prefix
+            # Check if it's an auth error and provide helpful guidance
+            if "401" in str(e) or "unauthorized" in str(e).lower():
+                print(
+                    "🔑 Authentication failed. Please ensure STABILITY_AI_KEY environment variable is set."
                 )
-            except Exception as mock_error:
-                print(f"❌ Mock generation also failed: {mock_error}")
-                return None, None, False
+                print(
+                    "   Get your API key from: https://platform.stability.ai/account/keys"
+                )
+
+            print("💡 Image generation requires a valid Stability AI API key.")
+            return None, None, False
         try:
             # Create a detailed prompt for ice cream
             prompt = self._create_natural_language_prompt(ingredients, scoops)
@@ -167,15 +239,18 @@ class ImageGeneratorTool:
                     local_path = self._save_image_from_response(
                         response.content, filename_prefix
                     )
-                    image_url = f"file://{local_path}"
+                    # Return HTTP URL instead of file:// URL
+                    filename = Path(local_path).name
+                    image_url = f"{src.settings.SERVER_URL}/api/v1/images/{filename}"
                     print(f"🖼️ Stability AI image saved to: {local_path}")
+                    print(f"🌐 Image accessible at: {image_url}")
                 else:
-                    # For non-save mode, we'd need to host the image somewhere
-                    # For now, save it and return file URL
+                    # For non-save mode, save it and return HTTP URL
                     local_path = self._save_image_from_response(
                         response.content, filename_prefix
                     )
-                    image_url = f"file://{local_path}"
+                    filename = Path(local_path).name
+                    image_url = f"{src.settings.SERVER_URL}/api/v1/images/{filename}"
 
                 return image_url, local_path, True
             else:
@@ -188,19 +263,18 @@ class ImageGeneratorTool:
 
         except Exception as e:
             print(f"❌ Stability AI image generation failed: {e}")
-            print("🔄 Falling back to mock image generation...")
 
-            # Fallback to mock generation
-            try:
-                from src.tools.mock_image_generator import MockImageGeneratorTool
-
-                mock_generator = MockImageGeneratorTool()
-                return mock_generator.generate_ice_cream_image(
-                    ingredients, scoops, save_to_root, filename_prefix
+            # Check if it's an auth error and provide helpful guidance
+            if "401" in str(e) or "unauthorized" in str(e).lower():
+                print(
+                    "🔑 Authentication failed. Please ensure STABILITY_AI_KEY environment variable is set."
                 )
-            except Exception as mock_error:
-                print(f"❌ Mock generation also failed: {mock_error}")
-                return None, None, False
+                print(
+                    "   Get your API key from: https://platform.stability.ai/account/keys"
+                )
+
+            print("💡 Image generation requires a valid Stability AI API key.")
+            return None, None, False
 
     def _create_natural_language_prompt(
         self, ingredients: list[str], scoops: int

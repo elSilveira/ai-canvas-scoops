@@ -76,6 +76,16 @@ class SelectionMappingAgent:
             "default_fallback": ["vanilla"],
             "reasoning": "Player chose not to make a selection this round",
         },
+        "light": {
+            "flavors": ["vanilla", "lemon", "mint"],
+            "toppings": ["whipped_cream", "fresh_berries"],
+            "texture": "airy",
+            "description": "Light, refreshing flavors with minimal heaviness",
+            "keywords": ["refreshing", "clean", "subtle", "delicate"],
+            "sweetness_level": "low",
+            "color_palette": ["pale yellow", "soft green", "creamy white"],
+            "calorie_conscious": True,
+        },
     }
 
     def __init__(self):

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiService, type Ingredient } from '@/services/api';
+import { getRealTimePricing, updateInventory } from '@/services/api';
 import { toast } from 'sonner';
 
 interface GameInventoryItem {
@@ -24,15 +25,15 @@ export const useIngredientsInventory = (playerCount: number = 4) => {
       setError(null);
 
       const ingredients = await apiService.getAllIngredients();
-      
+
       // Transform backend ingredients to game inventory format
       const gameInventory: GameInventory = {};
-      
+
       ingredients.forEach((ingredient: Ingredient) => {
         // Map ingredient names to game values
         const gameMapping: { [key: string]: string } = {
           'Vanilla extract': 'Classic',
-          'Dark chocolate (70%+ callets)': 'Rich', 
+          'Dark chocolate (70%+ callets)': 'Rich',
           'Lemons (fresh)': 'Light',
           'Heavy cream (35-40%)': 'Smooth',
           'Hazelnuts (roasted)': 'Crunchy',
@@ -77,12 +78,12 @@ export const useIngredientsInventory = (playerCount: number = 4) => {
       });
 
       setInventory(gameInventory);
-      
+
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load ingredients';
       setError(errorMessage);
       toast.error('Failed to load ingredients from server. Using default inventory.');
-      
+
       // Fallback to default inventory
       const defaultInventory: GameInventory = {
         Adventure: { available: playerCount, price: 15, description: 'Bold and daring flavors', allergies: [] },
@@ -94,7 +95,7 @@ export const useIngredientsInventory = (playerCount: number = 4) => {
         Sprinkles: { available: playerCount, price: 14, description: 'Colorful toppings', allergies: [] },
         Caramel: { available: playerCount, price: 15, description: 'Sweet caramel drizzle', allergies: ['dairy'] }
       };
-      
+
       setInventory(defaultInventory);
     } finally {
       setIsLoading(false);
@@ -105,7 +106,9 @@ export const useIngredientsInventory = (playerCount: number = 4) => {
     loadInventory();
   }, [playerCount]);
 
-  const decreaseInventory = (itemKey: string, amount: number = 1) => {
+  const decreaseInventory = async (itemKey: string, amount: number = 1) => {
+    // Phase 8: Remove deprecated inventory updates during game flow
+    // Only update local state for UI display purposes
     setInventory(prev => ({
       ...prev,
       [itemKey]: {
@@ -113,10 +116,38 @@ export const useIngredientsInventory = (playerCount: number = 4) => {
         available: Math.max(0, prev[itemKey].available - amount)
       }
     }));
+
+    // Note: Backend inventory updates are now handled during game processing
+    // This keeps the UI responsive while avoiding deprecated endpoint calls
+    console.log(`🎮 UI inventory decreased: ${itemKey} by ${amount} (display only)`);
   };
 
   const resetInventory = () => {
     loadInventory();
+  };
+
+  // Phase 3.3 - Real-time pricing integration
+  const calculateSelectionsCost = async (selections: string[]): Promise<number> => {
+    try {
+      const response = await getRealTimePricing({
+        selections,
+        playerName: 'InventoryPlayer'
+      });
+
+      if (response.success) {
+        return response.totalCost;
+      } else {
+        throw new Error(response.error || 'Failed to calculate cost');
+      }
+    } catch (error) {
+      console.warn('⚠️ Real-time pricing failed, using fallback calculation:', error);
+
+      // Fallback to local calculation
+      return selections.reduce((total, selection) => {
+        const item = inventory[selection];
+        return total + (item?.price || 10); // Default $10 if not found
+      }, 0);
+    }
   };
 
   return {
@@ -125,6 +156,7 @@ export const useIngredientsInventory = (playerCount: number = 4) => {
     error,
     decreaseInventory,
     resetInventory,
-    refetch: loadInventory
+    refetch: loadInventory,
+    calculateSelectionsCost  // Phase 3.3 addition
   };
 };
