@@ -10,14 +10,14 @@ import { toast } from "sonner";
 import { apiService } from "@/services/api";
 
 // Import images
-import adventureAction from "@/assets/adventure-action.jpg";
-import classicRetro from "@/assets/classic-retro.jpg";
-import lightFruit from "@/assets/light-fruit.jpg";
+import adventureAction from "@/assets/adventure-action.webp";
+import classicRetro from "@/assets/classic-retro.webp";
+import lightFruit from "@/assets/light-fruit.webp";
 import richChocolate from "@/assets/rich-chocolate.jpg";
-import smoothCream from "@/assets/smooth-cream.jpg";
-import crunchyNuts from "@/assets/crunchy-nuts.jpg";
+import smoothCream from "@/assets/smooth-cream.webp";
+import crunchyNuts from "@/assets/crunchy-nuts.jpeg";
 import rainbowSprinkles from "@/assets/rainbow-sprinkles.jpg";
-import caramelDrizzle from "@/assets/caramel-drizzle.jpg";
+import caramelDrizzle from "@/assets/caramel-drizzle.webp";
 
 interface AIInteraction {
   selection: string;
